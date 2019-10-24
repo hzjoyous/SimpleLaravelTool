@@ -14,10 +14,8 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\MessageFormatter;
-use function GuzzleHttp\Psr7\build_query;
 use Illuminate\Support\Facades\Log;
 use Psr\Log\LogLevel;
-use XiaoZhu\LodgeUnitBookApp\Service\GlobalService;
 
 class BaseRemoteService
 {
@@ -79,7 +77,7 @@ class BaseRemoteService
         $promise  = $this->client->getAsync($path, [
             'query' => $data
         ]);
-        $response = new RemoteServiceResponse($promise, $this->conf, $raw2Entity, ['uri' => $this->conf->getBaseUri() . $path . '?' . build_query($data)]);
+        $response = new RemoteServiceResponse($promise, $this->conf, $raw2Entity, ['uri' => $this->conf->getBaseUri() . $path . '?' . http_build_query($data)]);
         return $response;
     }
 
@@ -106,7 +104,7 @@ class BaseRemoteService
         $promise  = $this->client->postAsync($path, [
             'form_params' => $data
         ]);
-        $response = new RemoteServiceResponse($promise, $this->conf, $raw2Entity, ['uri' => $this->conf->getBaseUri() . $path . build_query($data)]);
+        $response = new RemoteServiceResponse($promise, $this->conf, $raw2Entity, ['uri' => $this->conf->getBaseUri() . $path . http_build_query($data)]);
         return $response;
     }
 

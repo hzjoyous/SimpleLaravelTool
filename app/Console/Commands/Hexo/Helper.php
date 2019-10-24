@@ -54,15 +54,16 @@ class Helper extends Command
                 $header
             );
             $header = array_reduce(explode(',', $header), function ($pre, $item) use ($fileNameWithExtension) {
+                $data = $item;
                 if ($item) {
                     $item = explode(':', $item, 2);
                     if (count($item) === 2) {
                         $pre[$item[0]] = $item[1];
-                        if($item[0] === 'title'){
+                        /*if ($item[0] === 'title') {
                             dump($item[1]);
-                        }
+                        }*/
                     } else {
-                        dump($fileNameWithExtension, $item);
+                        dump($fileNameWithExtension .' has '. $data);
                     }
 
                 }
