@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Console\Commands\Unit;
+namespace App\Console\Commands\Utils;
 
 
 class QQUtil

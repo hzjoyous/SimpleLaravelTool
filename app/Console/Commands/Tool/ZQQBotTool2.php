@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\Tool;
 
-use App\Console\Commands\Unit\QQUtil;
+use App\Console\Commands\Utils\QQUtil;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
