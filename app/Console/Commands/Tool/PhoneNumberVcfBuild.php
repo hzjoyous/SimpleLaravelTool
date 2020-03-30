@@ -4,7 +4,7 @@ namespace App\Console\Commands\Tool;
 
 use Illuminate\Console\Command;
 
-class PhoneNumber1 extends Command
+class PhoneNumberVcfBuild extends Command
 {
     /**
      * The name and signature of the console command.

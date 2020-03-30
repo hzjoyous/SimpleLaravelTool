@@ -4,7 +4,7 @@ namespace App\Console\Commands\Tool;
 
 use Illuminate\Console\Command;
 
-class DouYin extends Command
+class AdbDouYin extends Command
 {
     /**
      * The name and signature of the console command.

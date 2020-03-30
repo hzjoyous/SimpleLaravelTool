@@ -19,9 +19,8 @@
         "guzzlehttp/guzzle": "^6.5",
         "laravel/framework": "^7.0",
         "laravel/tinker": "^2.0",
-        "mongodb/mongodb": "^1.6",
-        "phpoffice/phpspreadsheet": "^1.11",
-        "predis/predis": "^1.1"
+        "league/csv": "^9.6",
+        "mongodb/mongodb": "^1.6"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.6",

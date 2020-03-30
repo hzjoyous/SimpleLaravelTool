@@ -4,7 +4,7 @@ namespace App\Console\Commands\Tool;
 
 use Illuminate\Console\Command;
 
-class WangZhe extends Command
+class AdbWangZhe extends Command
 {
     /**
      * The name and signature of the console command.
@@ -38,7 +38,7 @@ class WangZhe extends Command
     public function handle()
     {
         $adbPath = env('ADB_PATH');
-    
+
         $stops  = [];
         $standardL = 2280;
         $standardW = 1080;
@@ -61,18 +61,18 @@ class WangZhe extends Command
         $stops['闯关      ']  = "$adbPath   shell input tap $stopl4 $stopw4";
         while (true) {
             foreach ($stops as $stopName => $stop) {
-                echo $stop . PHP_EOL;
+                $this->info($stop);
                 $result = exec($stop);
-                echo $stopName . ':';
-                echo $result . PHP_EOL;
+                $this->info($stopName . ':');
+                $this->info($result);
             }
             $runTime = (microtime(true) - LARAVEL_START);
-            echo '运行时长' . $runTime . PHP_EOL;
+            $this->info('运行时长' . $runTime);
             if ((int) ($runTime / 60) > 180) {
                 break;
             }
         }
 
-        echo "finish" . PHP_EOL;
+        $this->info("finish");
     }
 }
