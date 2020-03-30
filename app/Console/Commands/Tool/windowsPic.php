@@ -5,7 +5,7 @@ namespace App\Console\Commands\Tool;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 
-class windowsPic extends Command
+class WindowsPic extends Command
 {
     /**
      * The name and signature of the console command.

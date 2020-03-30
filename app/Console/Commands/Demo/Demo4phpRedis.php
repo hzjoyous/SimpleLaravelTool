@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Console\Commands\Tool;
+namespace App\Console\Commands\Demo;
 
 use Illuminate\Console\Command;
+use Redis;
 
 class Demo4phpRedis extends Command
 {
@@ -37,7 +38,8 @@ class Demo4phpRedis extends Command
      */
     public function handle()
     {
-        // ext-redis
+        // ext-redis https://github.com/phpredis/phpredis   
+        
         $redis = new \Redis();
         $redis->connect('127.0.0.1', 6379);
         $redis->setOption(\Redis::OPT_READ_TIMEOUT, -1);

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands\Tool;
+namespace App\Console\Commands\Demo;
 
 use Illuminate\Console\Command;
 use MongoDB\Client;

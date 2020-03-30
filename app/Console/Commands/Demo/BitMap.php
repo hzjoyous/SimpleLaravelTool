@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands\Tool;
+namespace App\Console\Commands\Demo;
 
 use Illuminate\Console\Command;
 
@@ -11,7 +11,7 @@ class BitMap extends Command
      *
      * @var string
      */
-    protected $signature = 'z:bitMap';
+    protected $signature = 'demo:bitMap';
 
     /**
      * The console command description.

@@ -1,11 +1,8 @@
 <?php
 
-namespace App\Console\Commands\Tool;
+namespace App\Console\Commands\Demo;
 
 use Illuminate\Console\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 class Demo extends Command
 {
@@ -14,7 +11,7 @@ class Demo extends Command
      *
      * @var string
      */
-    protected $signature = 'z:demo';
+    protected $signature = 'demo:demo';
 
     /**
      * The console command description.
@@ -33,6 +30,11 @@ class Demo extends Command
         parent::__construct();
     }
 
+    /**
+     * Execute the console command.
+     *
+     * @return mixed
+     */
     public function handle()
     {
 

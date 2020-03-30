@@ -16,3 +16,13 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+Route::get('/phpinfo', function () {
+    phpinfo();
+});
+
+Route::get('/demo','WebDemoController@index');
+
+
+Route::get('/form','WebDemoController@form');

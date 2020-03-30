@@ -17,3 +17,11 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/demo','ApiDemoController@index');
+
+
+Route::get('/showCode','ApiDemoController@showCode');
+
+
+Route::post('/uploadFile','ApiDemoController@uploadFile');

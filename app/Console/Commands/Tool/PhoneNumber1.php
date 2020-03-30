@@ -43,12 +43,12 @@ class PhoneNumber1 extends Command
     public function handle()
     {
         /** xxxxxxxxxxx@163.com */
-        /** 1031968934 */
-        /** 237123603 */
+        /** xxxxxx */
+        /** xx */
         /** xxxx******** */
         /** xxxx******25 */
         /**
-         * 孙瑞君
+         * 孙xx
          */
         /** @var  $pre */
         $pre = '178';
