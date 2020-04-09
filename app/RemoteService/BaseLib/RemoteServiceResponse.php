@@ -1,20 +1,17 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: hzj
  * Date: 2019/4/23
  * Time: 14:21
  */
+
 declare(strict_types=1);
 
 namespace App\RemoteService\BaseLib;
 
-use App\RemoteService\BaseLib\BaseRemoteService;
-use App\RemoteService\RemoteServiceConf;
-use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Promise\PromiseInterface;
-use GuzzleHttp\Psr7\Response;
-use Psr\Http\Message\ResponseInterface;
 
 class RemoteServiceResponse
 {
@@ -42,11 +39,10 @@ class RemoteServiceResponse
      * @param callable|null $raw2Entity
      * @param array $message
      */
-    public function __construct(PromiseInterface $promise, RemoteServiceConf $conf, callable $raw2Entity = null, $message = [])
+    public function __construct(PromiseInterface $promise, callable $raw2Entity = null, $message = [])
     {
         $this->promise    = $promise;
         $this->raw2Entity = $raw2Entity;
-        $this->conf       = $conf;
         $this->message    = $message;
     }
 
@@ -55,7 +51,7 @@ class RemoteServiceResponse
         if ($this->waitEnd === false) {
             try {
                 $response      = $this->promise->wait();
-                $this->content = (string)($response->getBody());
+                $this->content = (string) ($response->getBody());
             } catch (\Throwable $e) {
                 \Log::info($e->getMessage());
                 $this->content = '';
@@ -72,7 +68,7 @@ class RemoteServiceResponse
     public function getResult()
     {
         if ($this->resultGet === false) {
-            $this->result = $this->conf->isUseResponseFormat() ? $this->conf->getResponseFormat()($this->getContent()) : $this->getContent();
+            $this->result = $this->getContent();
             is_null($this->getRaw2Entity()) || $this->result = $this->getRaw2Entity()($this->result);
             $this->resultGet = true;
         }

@@ -2,18 +2,24 @@
 
 namespace App\Console\Commands;
 
+use App\HttpClient\DoubanHttpClient;
+use App\HttpClient\TestHttpClient;
 use Illuminate\Console\Command;
-use Lcobucci\JWT\Builder;
-use Lcobucci\JWT\Parser;
+use MongoDB\BSON\ObjectId;
+use MongoDB\Client as MongoDBClient;
 
 class Tmp extends Command
 {
+    /**
+     * redis-cli
+     * flushall
+     */
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'z:tmp';
+    protected $signature = 'z:z';
 
     /**
      * The console command description.
@@ -39,32 +45,81 @@ class Tmp extends Command
      */
     public function handle()
     {
-
-        $token = (new Builder())->setIssuer('http://example.com') // Configures the issuer (iss claim)
-        ->setAudience('http://example.org') // Configures the audience (aud claim)
-        ->setId('4f1g23a12aa', true) // Configures the id (jti claim), replicating as a header item
-        ->setIssuedAt(time()) // Configures the time that the token was issued (iat claim)
-        ->setNotBefore(time() + 60) // Configures the time that the token can be used (nbf claim)
-        ->setExpiration(time() + 3600) // Configures the expiration time of the token (exp claim)
-        ->set('uid', 1) // Configures a new claim, called "uid"
-        ->getToken(); // Retrieves the generated token
+        $this->init();
+        $this->delCCData();
+    }
 
 
-        $token->getHeaders(); // Retrieves the token headers
-        $token->getClaims(); // Retrieves the token claims
+    /**
+     * @var MongoDBClient mongoDBClient
+     */
+    private $mongoDBClient;
 
-        echo $token->getHeader('jti').PHP_EOL; // will print "4f1g23a12aa"
-        echo $token->getClaim('iss').PHP_EOL; // will print "http://example.com"
-        echo $token->getClaim('uid').PHP_EOL; // will print "1"
-        echo $token.PHP_EOL; // The string representation of the object is a JWT string (pretty easy, right?)
-        $str = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIiwianRpIjoiNGYxZzIzYTEyYWEifQ.eyJpc3MiOiJodHRwOlwvXC9leGFtcGxlLmNvbSIsImF1ZCI6Imh0dHA6XC9cL2V4YW1wbGUub3JnIiwianRpIjoiNGYxZzIzYTEyYWEiLCJpYXQiOjE1NTYwMjMxMTksIm5iZiI6MTU1NjAyMzE3OSwiZXhwIjoxNTU2MDI2NzE5LCJ1aWQiOjF9.';
-        $token = (new Parser())->parse((string) $token); // Parses from a string
-        $token->getHeaders(); // Retrieves the token header
-        $token->getClaims(); // Retrieves the token claims
+    /**
+     * @var Database $mongoDBDatabase;
+     */
+    private $mongoDBDatabase;
 
-        echo $token->getHeader('jti').PHP_EOL; // will print "4f1g23a12aa"
-        echo $token->getClaim('iss').PHP_EOL; // will print "http://example.com"
-        echo $token->getClaim('uid').PHP_EOL; // will print "1"
-        return ;
+    /**
+     * @var DoubanHttpClient $doubanClient 
+     */
+    private $doubanClient;
+
+    public function init()
+    {
+
+        $this->testClient = new TestHttpClient();
+
+        $result = $this->testClient->cookieLook();
+
+        dd($result);
+
+
+        $this->doubanClient = new DoubanHttpClient();
+
+        $this->mongoDBClient = new MongoDBClient();
+
+        $this->mongoDBDatabase = $this->mongoDBClient->selectDatabase('db_simple_laravel');
+
+        return $this;
+    }
+
+    public function delCCData()
+    {
+        $client = new MongoDBClient();
+        /**
+         * 下述代码等价 $client->test; 详情查看 \MongoDB\Client::__get()
+         */
+        $database = $client->selectDatabase('db_simple_laravel');
+
+        /**
+         * 下述代码等价 $database->users; 详情查看 \MongoDB\Database::__get()
+         */
+        $topicContentCollection = $database->selectCollection('douban_topics_content');
+        $findResult = $topicContentCollection->find(['insert_time' => "1586254811"]);
+        $counter  = 0;
+        $this->info('find now ');
+        foreach ($findResult as $content) {
+            // die(("https://www.douban.com/group/topic/{$content['topic_id']}/?start={$content['page']}"));
+            $counter += 1;
+            // $this->info($content['topic_id']);
+            $doubanID = env('douban_id');
+            if (strpos($content['content'], $doubanID) !== false) {
+                echo ("https://www.douban.com/group/topic/{$content['topic_id']}/?start={$content['page']}") . PHP_EOL;
+                // $this->output->success($content['topic_id']);
+            }
+
+            // if (strpos($content['content'],  '<!DOCTYPE html>') === false) {
+            //     /**
+            //      * @var \MongoDB\BSON\ObjectId $id
+            //      */
+            //     $id = ($content['_id']);
+            //     // dump((string) ($content['content']));
+            //     $result = $topicContentCollection->findOneAndDelete(['_id' => new ObjectId($id)]);
+            //     // dump($result);
+            //     // printf("Deleted %d document(s)\n", $result->getDeletedCount());
+            // }
+        }
+        $this->output->success("Finished from {$counter} row");
     }
 }

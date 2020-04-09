@@ -1,6 +1,7 @@
 #!/usr/bin/env php
 <?php
-
+set_time_limit ( 0 ); // 脚本执行没有时间限
+ini_set("memory_limit","-1"); //不限制内存
 define('LARAVEL_START', microtime(true));
 
 /*

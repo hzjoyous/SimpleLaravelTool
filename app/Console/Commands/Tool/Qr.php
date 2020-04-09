@@ -20,7 +20,7 @@ class Qr extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'QR';
 
     /**
      * Create a new command instance.

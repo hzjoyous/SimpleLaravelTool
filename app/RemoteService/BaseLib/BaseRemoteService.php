@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace App\RemoteService\BaseLib;
 
-use App\RemoteService\RemoteServiceConf;
+use App\RemoteService\BaseLib\RemoteServiceConf;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\HandlerStack;
