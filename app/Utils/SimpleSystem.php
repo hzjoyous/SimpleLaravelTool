@@ -26,4 +26,10 @@ class SimpleSystem
                 return self::OS_UNKNOWN;
         }
     }
+
+    static public function isWin()
+    {
+        return self::getOS()===self::OS_WIN;
+    }
+
 }

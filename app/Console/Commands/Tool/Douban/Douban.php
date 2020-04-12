@@ -2,7 +2,11 @@
 
 namespace App\Console\Commands\Tool\Douban;
 
+use App\HttpClient\DoubanHttpClient;
+use App\Utils\SimpleSystem;
 use Illuminate\Console\Command;
+use MongoDB\BSON\ObjectId;
+use MongoDB\Client as MongoDBClient;
 
 class Douban extends Command
 {
@@ -11,7 +15,7 @@ class Douban extends Command
      *
      * @var string
      */
-    protected $signature = 'command:name';
+    protected $signature = 'z:douban:master';
 
     /**
      * The console command description.
@@ -37,6 +41,72 @@ class Douban extends Command
      */
     public function handle()
     {
-        //
+        $this->init();
+        $this->doAction();
+    }
+
+    /**
+     * @var MongoDBClient mongoDBClient
+     */
+    private $mongoDBClient;
+
+    /**
+     * @var Database $mongoDBDatabase;
+     */
+    private $mongoDBDatabase;
+
+    /**
+     * @var DoubanHttpClient $doubanClient 
+     */
+    private $doubanClient;
+
+    public function init()
+    {
+        $this->doubanClient = new DoubanHttpClient();
+
+        $this->mongoDBClient = new MongoDBClient();
+
+        $this->mongoDBDatabase = $this->mongoDBClient->selectDatabase('db_simple_laravel');
+
+        return $this;
+    }
+
+    public function doAction()
+    {
+        $doubanConfig = new DoubanConfig(__DIR__ . '/config.json');
+
+        $client = new MongoDBClient();
+        $database = $client->selectDatabase('db_simple_laravel');
+        $topicContentCollection = $database->selectCollection('douban_topics_content');
+        //['insert_time' => $doubanConfig->getInsertTime()]
+        $findResult = $topicContentCollection->find([]);
+        $counter  = 0;
+        $this->info('find now');
+        foreach ($findResult as $content) {
+            $counter += 1;
+            $doubanID = env('douban_id');
+            if (strpos($content['content'], $doubanID) !== false) {
+                $topicUrl = "https://www.douban.com/group/topic/{$content['topic_id']}/?start={$content['page']}";
+                if (SimpleSystem::isWin()) {
+                    exec("start $topicUrl");
+                }
+                echo ("https://www.douban.com/group/topic/{$content['topic_id']}/?start={$content['page']}") . PHP_EOL;
+            }
+        }
+        $this->output->success("Finished from {$counter} row");
+    }
+
+    public function del()
+    {
+        // if (strpos($content['content'],  '<!DOCTYPE html>') === false) {
+        //     /**
+        //      * @var \MongoDB\BSON\ObjectId $id
+        //      */
+        //     $id = ($content['_id']);
+        //     // dump((string) ($content['content']));
+        //     $result = $topicContentCollection->findOneAndDelete(['_id' => new ObjectId($id)]);
+        //     // dump($result);
+        //     // printf("Deleted %d document(s)\n", $result->getDeletedCount());
+        // }
     }
 }
