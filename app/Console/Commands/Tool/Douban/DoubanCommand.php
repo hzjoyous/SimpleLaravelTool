@@ -8,11 +8,12 @@ use Illuminate\Console\Command;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Client as MongoDBClient;
 
-class Douban extends Command
+class DoubanCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
+     * php artisan z:douban:master
      * @var string
      */
     protected $signature = 'z:douban:master';
@@ -43,6 +44,7 @@ class Douban extends Command
     {
         $this->init();
         $this->doAction();
+        // $this->del();
     }
 
     /**
@@ -78,8 +80,8 @@ class Douban extends Command
         $client = new MongoDBClient();
         $database = $client->selectDatabase('db_simple_laravel');
         $topicContentCollection = $database->selectCollection('douban_topics_content');
-        //['insert_time' => $doubanConfig->getInsertTime()]
-        $findResult = $topicContentCollection->find([]);
+        $filter = ['insert_time' => $doubanConfig->getInsertTime()];
+        $findResult = $topicContentCollection->find($filter);
         $counter  = 0;
         $this->info('find now');
         foreach ($findResult as $content) {
@@ -98,15 +100,24 @@ class Douban extends Command
 
     public function del()
     {
-        // if (strpos($content['content'],  '<!DOCTYPE html>') === false) {
-        //     /**
-        //      * @var \MongoDB\BSON\ObjectId $id
-        //      */
-        //     $id = ($content['_id']);
-        //     // dump((string) ($content['content']));
-        //     $result = $topicContentCollection->findOneAndDelete(['_id' => new ObjectId($id)]);
-        //     // dump($result);
-        //     // printf("Deleted %d document(s)\n", $result->getDeletedCount());
-        // }
+        return ;
+        $client = new MongoDBClient();
+        $database = $client->selectDatabase('db_simple_laravel');
+        $topicContentCollection = $database->selectCollection('douban_topics');
+        $filter = ['insert_time' => '1586781808'];
+        $findResult = $topicContentCollection->find($filter);
+        $counter  = 0;
+        $this->info('find now');
+        foreach ($findResult as $content) {
+            $counter += 1;
+            /**
+             * @var \MongoDB\BSON\ObjectId $id
+             */
+            $id = ($content['_id']);
+            // dump((string) ($content['content']));
+            $result = $topicContentCollection->findOneAndDelete(['_id' => new ObjectId($id)]);
+            dump($result);
+            // printf("Deleted %d document(s)\n", $result->getDeletedCount());
+        }
     }
 }

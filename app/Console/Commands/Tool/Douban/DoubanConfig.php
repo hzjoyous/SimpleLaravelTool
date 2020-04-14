@@ -8,6 +8,7 @@ class DoubanConfig
     private $start;
     private $end;
     private $insertTime;
+    private $groupList;
 
     public function __construct($configFilePath)
     {
@@ -22,6 +23,7 @@ class DoubanConfig
         $this->start = $config['start'];
         $this->end = $config['end'];
         $this->insertTime = $config['insertTime'];
+        $this->groupList = $config['groupList'];
     }
 
     public function getGroupId()
@@ -39,5 +41,9 @@ class DoubanConfig
     public function getInsertTime()
     {
         return $this->insertTime;
+    }
+    public function getGroupList()
+    {
+        return $this->groupList;
     }
 }

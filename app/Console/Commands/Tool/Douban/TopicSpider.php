@@ -14,6 +14,14 @@ use Redis;
 class TopicSpider extends Command
 {
     /**
+     *  php artisan z:douban:t slb
+     *  # ps -ef|grep "douban" | grep -v grep | awk '{print $2}' |  xargs kill -9
+     *  php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log &
+     *  php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log &
+     *  php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log &
+     *  php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log &
+     */
+    /**
      * The name and signature of the console command.
      *
      * @var string
@@ -82,12 +90,8 @@ class TopicSpider extends Command
     {
         $mode = $this->argument('mode');
 
-        $config = file_get_contents(__DIR__ . '/config.json');
-        $config = json_decode($config, true);
-        $groupId  = (string) $config['groupId'];
-        $start = $config['start'];
-        $end = $config['end'];
-        $insertTime = $config['insertTime'];
+        $doubanConfig = new DoubanConfig(__DIR__ . '/config.json');
+        $insertTime = $doubanConfig->getInsertTime();
 
         $doubanPath = storage_path('tmp' . DIRECTORY_SEPARATOR . 'douban');
         if (is_dir($doubanPath) || mkdir($doubanPath, 0777, true)) {
@@ -99,14 +103,6 @@ class TopicSpider extends Command
                 $this->sListUse();
                 break;
             case 'slb':
-                /**
-                 * php artisan z:douban:t slb
-                 *  # ps -ef|grep "douban" | grep -v grep | awk '{print $2}' |  xargs kill -9
-                 *  php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log &
-                 *  php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log &
-                 *  php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log &
-                 *  php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log &
-                 */
                 $this->sListBuild($insertTime);
                 break;
             default:
@@ -162,8 +158,9 @@ class TopicSpider extends Command
                 $start = 0;
                 $pageNum = (int) ($replyNum / 100) + 1;
                 while ($pageNum--) {
-                    $findResult = $topicContentCollection->findOne(['topic_id' => $topicId, 'page' => $start ]);
-                    if (false && $findResult !== null) {
+                    $findResult = $topicContentCollection->findOne(['topic_id' => $topicId, 'page' => $start]);
+                    //false &&
+                    if ($findResult !== null) {
                         $this->line("{$topicId}_{$start} 已经存在,跳过");
                     } else {
                         $content = $this->doubanClient->getTopicByTopicId($topicId, $start);
@@ -172,7 +169,7 @@ class TopicSpider extends Command
                             'page' => $start,
                             'content' => (string) $content,
                             'group_id' => (string) $groupId,
-                            'insert_time'=>(string) $insertTime
+                            'insert_time' => (string) $insertTime
                         ]);
                         if (strpos((string) $content, '<!DOCTYPE html>') === false) {
                             $this->error("error content : $content");
@@ -188,7 +185,7 @@ class TopicSpider extends Command
                 $this->redis->lPush($this->redisListKey, $topicInfoStr);
                 $this->warn('need change ip');
             } else {
-                if (!$topicInfoStr) {
+                if ($topicInfoStr) {
                     $this->redis->lPush($this->redisListKey, $topicInfoStr);
                     $this->warn('push success need restart');
                 }

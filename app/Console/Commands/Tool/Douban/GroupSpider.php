@@ -2,32 +2,23 @@
 
 namespace App\Console\Commands\Tool\Douban;
 
-use App\HttpClient\DoubanHttpClient;
-use GuzzleHttp\Client;
-use GuzzleHttp\Cookie\CookieJar;
-use GuzzleHttp\Cookie\SetCookie;
+use App\HttpClient\DoubanHttpClient;;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Storage;
-use League\Csv\Reader;
-use League\Csv\Statement;
 use Symfony\Component\DomCrawler\Crawler;
-use Symfony\Component\Finder\Finder;
 use MongoDB\Client as MongoDBClient;
 use MongoDB\Database;
+use Redis;
 
 class GroupSpider extends Command
 {
     /**
      * php artisan z:douban:group s
-     * php artisan z:douban:group b
-     * php artisan z:douban:group bm
      * 
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'z:douban:group 
-    {mode=n :运行模式,s(蜘蛛),b(构建),bm(入库mongodb)}';
+    protected $signature = 'z:douban:group';
 
     /**
      * The console command description.
@@ -54,44 +45,36 @@ class GroupSpider extends Command
      */
     public function handle()
     {
-
-
-        $mode = $this->argument('mode');
-
-        $config = file_get_contents(__DIR__ . '/config.json');
-        $config = json_decode($config, true);
-        $groupId  = (string) $config['groupId'];
-        $start = $config['start'];
-        $end = $config['end'];
-        $insertTime = $config['insertTime'];
-
-        $doubanPath = storage_path('tmp' . DIRECTORY_SEPARATOR . 'douban');
-        if (is_dir($doubanPath) || mkdir($doubanPath, 0777, true)) {
-        }
-        $doubanGroupPath = $doubanPath . DIRECTORY_SEPARATOR . 'group';
-        if (is_dir($doubanGroupPath) || mkdir($doubanGroupPath, 0777, true)) {
-        }
-        $groupIdPath = $doubanGroupPath . DIRECTORY_SEPARATOR . $groupId;
-        if (is_dir($groupIdPath) || mkdir($groupIdPath, 0777, true)) {
-        }
+        $doubanConfig = new DoubanConfig(__DIR__ . '/config.json');
+        $groupId  = $doubanConfig->getGroupId();
         $this->init();
 
-        switch ($mode) {
-            case 's':
-                $this->s($groupIdPath, $groupId, $start, $end);
-                break;
-            case 'b':
-                $this->b($groupIdPath, $doubanGroupPath, $groupId, $insertTime);
-                break;
-            case 'bm':
-                $this->bm($doubanGroupPath, $groupId, $insertTime);
-                break;
-            default:
-                break;
-        }
-        $this->output->success('success');
-    }
+        foreach ($doubanConfig->getGroupList() as $value) {
+            $doubanPath = storage_path('tmp' . DIRECTORY_SEPARATOR . 'douban');
+            $doubanGroupPath = $doubanPath . DIRECTORY_SEPARATOR . 'group';
+            $groupIdPath = $doubanGroupPath . DIRECTORY_SEPARATOR . $groupId;
 
+            is_dir($doubanPath) || mkdir($doubanPath, 0777, true);
+            is_dir($doubanGroupPath) || mkdir($doubanGroupPath, 0777, true);
+            is_dir($groupIdPath) || mkdir($groupIdPath, 0777, true);
+
+            $groupId = $value['id'];
+            $this->info("当前groupId" . $groupId);
+
+            try {
+                $this->s($groupIdPath, $groupId, $doubanConfig);
+            } catch (\Exception $e) {
+                if ($e->getCode() === self::CONTINUE_S) {
+                    $this->warn($e->getMessage());
+                } else {
+                    throw $e;
+                }
+            }
+
+            $this->output->success("groupId {$groupId} success");
+        }
+        return;
+    }
 
     /**
      * @var MongoDBClient mongoDBClient
@@ -108,8 +91,20 @@ class GroupSpider extends Command
      */
     private $doubanClient;
 
+    /**
+     * @var Redis $redis
+     */
+    private $redis;
+    private $redisHost = '127.0.0.1';
+    private $redisPort = 6379;
+    private $redisPassWord = '';
+
     public function init()
     {
+        $this->redis = new Redis();
+        $this->redis->connect($this->redisHost, $this->redisPort);
+        $this->redis->setOption(Redis::OPT_READ_TIMEOUT, -1);
+        $this->redisPassWord && $this->redis->auth($this->redisPassWord);
 
         $this->doubanClient = new DoubanHttpClient();
 
@@ -120,137 +115,118 @@ class GroupSpider extends Command
         return $this;
     }
 
-
-    public function b($groupIdPath, $doubanGroupPath, $groupId, $insertTime)
+    public function s($groupIdPath, $groupId, DoubanConfig $doubanConfig)
     {
+        $counter = 0;
+        $n = $doubanConfig->getStart();
+        $insertTime = $doubanConfig->getInsertTime();
+        $endNumber = $doubanConfig->getEnd();
 
-        $f = new Finder();
-        $files = $f->files()->in($groupIdPath)->sortByModifiedTime();
-        $i = 0;
+        while ($n < $endNumber) {
+            $cacheKey = "group:{$groupId}|n:{$n}|4";
+            $counter += 1;
+            $this->info("start:{$n}/{$endNumber},groupId:{$groupId},useTime:" . (microtime(true) - LARAVEL_START));
 
-        $collection = $this->mongoDBDatabase->selectCollection('douban_topics');
-        file_put_contents($doubanGroupPath . DIRECTORY_SEPARATOR . $groupId . '.csv', 'replyNum,topic,people,html' . PHP_EOL);
-        /**
-         * @var \Symfony\Component\Finder\SplFileInfo $file
-         */
-        foreach ($files as $file) {
-            if ($i % 10 === 0) {
-                dump($file->getFilename());
+            if ($isDown = $this->redis->get($cacheKey)) {
+                $content = file_get_contents($groupIdPath . DIRECTORY_SEPARATOR . $n . '.html');
+                $n += 25;
+                $this->info("已抓取->$isDown 不进行操作跳过");
+                continue;
+            } else {
+                $this->info("https://www.douban.com/group/$groupId/discussion");
+                $content = $this->doubanClient->getTopicListByGroupId($groupId, $n);
             }
-            $i++;
-            $resultData = '';
-            $realPath = $file->getRealPath();
-            $content = $file->getContents();
-            $crawler = new Crawler($content);
-            $crawler = $crawler->filter('html > body')
-                ->filter('tr')
-                ->reduce(function (Crawler $crawler, $i) use (&$resultData, $realPath, $insertTime, $groupId, $collection) {
-                    if ($i <= 1) {
-                        return false;
-                    }
-                    $num = 0;
-                    foreach ($crawler->filter('td') as $domElement) {
-                        /**
-                         * @var \DOMElement $domElement
-                         */
-                        $num += 1;
-                        if ($num === 3) {
-                            $replyNum = ($domElement->textContent);
-                        }
-                    }
-                    $crawler = $crawler->filter('a');
-                    if (count($crawler) !== 2) {
-                        $this->output->error('节点数量不匹配');
-                    }
-                    $num = 0;
-                    foreach ($crawler as $domElement) {
-                        /**
-                         * @var \DOMElement $domElement
-                         */
-                        switch ($num) {
+
+            $this->checkContent($content);
+            $this->downFile($groupIdPath . DIRECTORY_SEPARATOR . $n . '.html', $content);
+            $this->inputDB($content, $groupId, $insertTime, $n);
+
+            $this->redis->set($cacheKey, true, 3600);
+            $n += 25;
+            $this->info("success:{$n}/{$endNumber},groupId:{$groupId},useTime:" . (microtime(true) - LARAVEL_START));
+        }
+    }
+
+    public function checkContent($content)
+    {
+        if (strpos((string) $content, '<!DOCTYPE html>') === false) {
+            throw new \Exception("返回非网页" . $content);
+        }
+        if (mb_strpos((string) $content, '你访问豆瓣的方式有点像机器人程序', 0, "UTF-8") !== false) {
+            throw new \Exception("数据返回异常");
+        }
+    }
+
+    public function downFile($path, $content)
+    {
+        file_put_contents($path, $content);
+    }
+
+    public function inputDB($html, $groupId, $insertTime, $n)
+    {
+        $crawler = new Crawler($html);
+
+        $result = $crawler->filter('table[class="olt"]')
+            ->filter('tr')
+            ->reduce(function (Crawler $crawler, $i) {
+                if ($i < 1) {
+                    return false;
+                }
+                return true;
+            })
+            ->each(function (Crawler $node, $i) {
+                $result = $node
+                    ->filter('td')
+                    ->each(function (Crawler $node, $i) {
+                        $result = '';
+                        switch ($i) {
                             case 0:
-                                $topicUrl = $domElement->getAttribute('href');
+                                $topicUrl =  $node->filter('a')->attr('href');
+                                $result = (explode('/', $topicUrl))[5];
                                 break;
                             case 1:
-                                $peopleUrl = $domElement->getAttribute('href');
+                                $peopleUrl = $node->filter('a')->attr('href');
+                                $result = (explode('/', $peopleUrl))[4];
+                                break;
+                            case 2:
+                                $replyNum = $node->text();
+                                $result = $replyNum;
+                                break;
+                            case 3:
+                                $lastUpdateDate = $node->text();
+                                $result = $lastUpdateDate;
                                 break;
                             default:
-                                $this->output->error('节点不匹配');
+                                break;
                         }
-                        $num += 1;
-                    }
-                    $resultData .= $replyNum . ',' . $topicUrl . ',' . $peopleUrl . ',' . $realPath . PHP_EOL;
-                    $item=[];
-                    $item['topic_id'] = (explode('/', $topicUrl))[5];
-                    $item['people_id'] = (explode('/', $peopleUrl))[4];
-                    $item['reply_num'] = $replyNum;
-                    $item['group_id'] = $groupId;
-                    $item['insert_time'] = (string) $insertTime;
-                    $collection->insertOne(
-                        $item
-                    );
-                    return true;
-                });
+                        return $result;
+                    });
+                return $result;
+            });
 
-            file_put_contents($doubanGroupPath . DIRECTORY_SEPARATOR . $groupId . '.csv', $resultData, 8);
+        $waitInsert = array_map(function ($item) use ($groupId, $insertTime) {
+            return [
+                'topic_id' => $item[0],
+                'people_id' => $item[1],
+                'reply_num' => $item[2],
+                'group_id' => $groupId,
+                'insert_time' => $insertTime,
+            ];
+        }, $result);
+
+        if (!$waitInsert) {
+            $this->warn('no need insert' . PHP_EOL . "https://www.douban.com/group/$groupId/discussion?start=" . $n);
+            throw new \Exception("不存在数据,跳过本组循环.注意检查本次url,https://www.douban.com/group/$groupId/discussion?start=" . $n, self::CONTINUE_S);
         }
-    }
-
-    public function s($groupIdPath, $groupId, $n = 0, $endNumber = 511300)
-    {
-        while ($n < $endNumber) {
-            $content = $this->doubanClient->getTopicListByGroupId($groupId, $n);
-
-            if (strpos((string) $content, '<!DOCTYPE html>') === false) {
-                $this->error("groupId:{$groupId},n:{$n},endNumber:{$endNumber}");
-                break;
-            }
-            file_put_contents($groupIdPath . DIRECTORY_SEPARATOR . $n . '.html', $content);
-            $n += 25;
-            $this->info("now:{$n},{$endNumber},useTime:" . (microtime(true) - LARAVEL_START));
-        }
-    }
-
-    public function bm($doubanGroupPath, $groupId, $insertTime)
-    {
-        $csvPath  = $doubanGroupPath . DIRECTORY_SEPARATOR . $groupId . '.csv';
-        $csv = Reader::createFromPath($csvPath);
-        $csv->setHeaderOffset(0);
-
-        $stmt = (new Statement());
-        $records = $stmt->process($csv);
-
-        $waitInsertData = [];
-        $counter = 0;
-
         /**
-         *  db.douban_topics.createIndex({topic_id:1})
-         *  db.douban_topics.createIndex({people_id:1})
+         * @var \MongoDB\Collection  $collection
          */
         $collection = $this->mongoDBDatabase->selectCollection('douban_topics');
-        foreach ($records as $record) {
-            $item = [];
-            $item['topic_id'] = (explode('/', $record["topic"]))[5];
-            $item['people_id'] = (explode('/', $record["people"]))[4];
-            $item['reply_num'] = $record["replyNum"];
-            $item['group_id'] = $groupId;
-            $item['insert_time'] = (string) $insertTime;
-            $counter += 1;
-            $waitInsertData[] = $item;
-            if ($counter > 5000) {
-                $collection->insertMany(
-                    $waitInsertData
-                );
-                $waitInsertData = [];
-                $counter = 0;
-                $this->info('insert 5000');
-            }
-        }
-        $collection->insertMany(
-            $waitInsertData
+        $result = $collection->insertMany(
+            $waitInsert
         );
-        $waitInsertData = [];
-        $counter = 0;
-        $this->output->success("Finished insertTime :{$insertTime}");
+        $this->info("insert count {$result->getInsertedCount()}");
     }
+
+    const CONTINUE_S = 10009;
 }

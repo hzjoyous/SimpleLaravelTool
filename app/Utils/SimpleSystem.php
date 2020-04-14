@@ -29,7 +29,11 @@ class SimpleSystem
 
     static public function isWin()
     {
-        return self::getOS()===self::OS_WIN;
+        return self::getOS() === self::OS_WIN;
     }
 
+    static public function is_nix()
+    {
+        return in_array(self::getOS(), [self::OS_LINUX, self::OS_OSX], true);
+    }
 }
