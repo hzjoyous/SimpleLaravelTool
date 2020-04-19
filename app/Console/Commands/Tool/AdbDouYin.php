@@ -72,6 +72,7 @@ class AdbDouYin extends Command
             $runTime = (microtime(true) - LARAVEL_START);
             $this->info('运行时长:' . $runTime);
         }
+        return ;
     }
 }
 

@@ -74,5 +74,6 @@ class AdbWangZhe extends Command
         }
 
         $this->info("finish");
+        return ;
     }
 }

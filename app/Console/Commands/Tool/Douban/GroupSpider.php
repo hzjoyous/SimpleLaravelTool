@@ -2,18 +2,23 @@
 
 namespace App\Console\Commands\Tool\Douban;
 
-use App\HttpClient\DoubanHttpClient;;
+use App\HttpClient\DoubanHttpClient;
+
+;
+
+use Exception;
 use Illuminate\Console\Command;
+use MongoDB\Collection;
 use Symfony\Component\DomCrawler\Crawler;
 use MongoDB\Client as MongoDBClient;
 use MongoDB\Database;
-use Redis;
+use \Redis;
 
 class GroupSpider extends Command
 {
     /**
      * php artisan z:douban:group s
-     * 
+     *
      * The name and signature of the console command.
      *
      * @var string
@@ -46,10 +51,19 @@ class GroupSpider extends Command
     public function handle()
     {
         $doubanConfig = new DoubanConfig(__DIR__ . '/config.json');
-        $groupId  = $doubanConfig->getGroupId();
         $this->init();
+        $groupList = [];
+        $useGroupList = false;
+        if ($useGroupList) {
+            foreach ($doubanConfig->getGroupList() as $value) {
+                $groupList[] = $value['id'];
+            }
+        } else {
+            $groupList[] = $doubanConfig->getGroupId();
+        }
 
-        foreach ($doubanConfig->getGroupList() as $value) {
+        foreach ($groupList as $groupId) {
+            $this->info("当前groupId" . $groupId);
             $doubanPath = storage_path('tmp' . DIRECTORY_SEPARATOR . 'douban');
             $doubanGroupPath = $doubanPath . DIRECTORY_SEPARATOR . 'group';
             $groupIdPath = $doubanGroupPath . DIRECTORY_SEPARATOR . $groupId;
@@ -58,12 +72,10 @@ class GroupSpider extends Command
             is_dir($doubanGroupPath) || mkdir($doubanGroupPath, 0777, true);
             is_dir($groupIdPath) || mkdir($groupIdPath, 0777, true);
 
-            $groupId = $value['id'];
-            $this->info("当前groupId" . $groupId);
 
             try {
                 $this->s($groupIdPath, $groupId, $doubanConfig);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 if ($e->getCode() === self::CONTINUE_S) {
                     $this->warn($e->getMessage());
                 } else {
@@ -82,12 +94,12 @@ class GroupSpider extends Command
     private $mongoDBClient;
 
     /**
-     * @var Database $mongoDBDatabase;
+     * @var Database $mongoDBDatabase ;
      */
     private $mongoDBDatabase;
 
     /**
-     * @var DoubanHttpClient $doubanClient 
+     * @var DoubanHttpClient $doubanClient
      */
     private $doubanClient;
 
@@ -99,6 +111,9 @@ class GroupSpider extends Command
     private $redisPort = 6379;
     private $redisPassWord = '';
 
+    /**
+     * @return $this
+     */
     public function init()
     {
         $this->redis = new Redis();
@@ -115,6 +130,12 @@ class GroupSpider extends Command
         return $this;
     }
 
+    /**
+     * @param $groupIdPath
+     * @param $groupId
+     * @param DoubanConfig $doubanConfig
+     * @throws Exception
+     */
     public function s($groupIdPath, $groupId, DoubanConfig $doubanConfig)
     {
         $counter = 0;
@@ -133,7 +154,7 @@ class GroupSpider extends Command
                 $this->info("已抓取->$isDown 不进行操作跳过");
                 continue;
             } else {
-                $this->info("https://www.douban.com/group/$groupId/discussion");
+                $this->info("https://www.douban.com/group/$groupId/discussion?start={$n}");
                 $content = $this->doubanClient->getTopicListByGroupId($groupId, $n);
             }
 
@@ -147,13 +168,17 @@ class GroupSpider extends Command
         }
     }
 
+    /**
+     * @param $content
+     * @throws Exception
+     */
     public function checkContent($content)
     {
-        if (strpos((string) $content, '<!DOCTYPE html>') === false) {
-            throw new \Exception("返回非网页" . $content);
+        if (strpos((string)$content, '<!DOCTYPE html>') === false) {
+            throw new Exception("返回非网页" . $content);
         }
-        if (mb_strpos((string) $content, '你访问豆瓣的方式有点像机器人程序', 0, "UTF-8") !== false) {
-            throw new \Exception("数据返回异常");
+        if (mb_strpos((string)$content, '你访问豆瓣的方式有点像机器人程序', 0, "UTF-8") !== false) {
+            throw new Exception("数据返回异常");
         }
     }
 
@@ -175,13 +200,13 @@ class GroupSpider extends Command
                 return true;
             })
             ->each(function (Crawler $node, $i) {
-                $result = $node
+                return $node
                     ->filter('td')
                     ->each(function (Crawler $node, $i) {
                         $result = '';
                         switch ($i) {
                             case 0:
-                                $topicUrl =  $node->filter('a')->attr('href');
+                                $topicUrl = $node->filter('a')->attr('href');
                                 $result = (explode('/', $topicUrl))[5];
                                 break;
                             case 1:
@@ -201,7 +226,6 @@ class GroupSpider extends Command
                         }
                         return $result;
                     });
-                return $result;
             });
 
         $waitInsert = array_map(function ($item) use ($groupId, $insertTime) {
@@ -216,10 +240,10 @@ class GroupSpider extends Command
 
         if (!$waitInsert) {
             $this->warn('no need insert' . PHP_EOL . "https://www.douban.com/group/$groupId/discussion?start=" . $n);
-            throw new \Exception("不存在数据,跳过本组循环.注意检查本次url,https://www.douban.com/group/$groupId/discussion?start=" . $n, self::CONTINUE_S);
+            throw new Exception("不存在数据,跳过本组循环.注意检查本次url,https://www.douban.com/group/$groupId/discussion?start=" . $n, self::CONTINUE_S);
         }
         /**
-         * @var \MongoDB\Collection  $collection
+         * @var Collection $collection
          */
         $collection = $this->mongoDBDatabase->selectCollection('douban_topics');
         $result = $collection->insertMany(
