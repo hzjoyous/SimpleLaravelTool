@@ -19,8 +19,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::get('/demo','ApiDemoController@index');
+Route::post('/demo','ApiDemoController@index');
 
 Route::get('/rgps','ApiDemoController@rgps');
+Route::post('/rgps','ApiDemoController@rgps');
 
 Route::get('/cookie-look','ApiDemoController@cookieLook');
 

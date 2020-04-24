@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\HttpClient\AipHttpClient;
 use Illuminate\Console\Command;
 
 class Tmp extends Command
@@ -41,7 +42,8 @@ class Tmp extends Command
      */
     public function handle()
     {
-        $this->info('this is tmp commond');
+        $aipClient = new AipHttpClient();
+        echo (string)$aipClient->say("你好", "123456789");
         return ;
     }
 }

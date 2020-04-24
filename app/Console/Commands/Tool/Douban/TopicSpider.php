@@ -52,7 +52,7 @@ class TopicSpider extends Command
      */
     private $mongoDBDatabase;
     /**
-     * @var DoubanHttpClient $doubanClient 
+     * @var DoubanHttpClient $doubanClient
      */
     private $doubanClient;
 
@@ -147,7 +147,7 @@ class TopicSpider extends Command
          */
         $topicContentCollection = $mongoDBDatabase->selectCollection('douban_topics_content');
         try {
-
+            $topicInfoStr = '';
             while ($this->redis->lLen($this->redisListKey)) {
                 $topicInfoStr = $this->redis->lPop($this->redisListKey);
                 $topicInfo = json_decode($topicInfoStr, 1);
