@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands\Tool;
+namespace App\Console\Commands\Tool\Adb;
 
 use Illuminate\Console\Command;
 
@@ -56,8 +56,6 @@ class AdbDouYin extends Command
         $standardH =  1440;
         $standardW = 960;
 
-
-
         $start = new Coordinate();
         $start->x = $standardW / 2;
         $start->y = (int) ($standardH / 7 * 4);
@@ -74,10 +72,4 @@ class AdbDouYin extends Command
         }
         return ;
     }
-}
-
-class Coordinate
-{
-    public $x;
-    public $y;
 }

@@ -42,8 +42,11 @@ class Tmp extends Command
      */
     public function handle()
     {
-        $aipClient = new AipHttpClient();
-        echo (string)$aipClient->say("你好", "123456789");
+
+        file_put_contents("ceshi.csv","数据1,数据2,数据3,数据4,数据5,数据6,数据7".PHP_EOL,8);
+        for($i = 0;$i<=100;$i++){
+            file_put_contents("ceshi.csv","$i,2,3,4,5,6,7".PHP_EOL,8);
+        }
         return ;
     }
 }

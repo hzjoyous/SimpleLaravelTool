@@ -18,6 +18,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('/demo','ApiDemoController@getNull');
 Route::get('/demo','ApiDemoController@index');
 Route::post('/demo','ApiDemoController@index');
 

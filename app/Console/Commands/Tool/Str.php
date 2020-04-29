@@ -4,7 +4,7 @@ namespace App\Console\Commands\Tool;
 
 use Illuminate\Console\Command;
 
-class str extends Command
+class Str extends Command
 {
     /**
      * The name and signature of the console command.
