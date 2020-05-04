@@ -63,14 +63,19 @@ EOF;
 
         enable-php.conf
 
-        location ~ [^/]\.php(/|$)
-        {
-            try_files \$uri =404;
-            fastcgi_pass  unix:/tmp/php-cgi.sock;
-            fastcgi_index index.php;
-            include fastcgi.conf;
-        }
-
+location ~ [^/]\.php(/|$)
+{
+#try_files \$uri =404;
+#fastcgi_pass  unix:/tmp/php-cgi.sock;
+        fastcgi_pass  127.0.0.1:9000;
+        fastcgi_index index.php;
+        include fastcgi.conf;
+        fastcgi_split_path_info ^(.+?\.php)(/.*)$;
+        set \$path_info \$fastcgi_path_info;
+        fastcgi_param PATH_INFO       \$path_info;
+#try_files \$fastcgi_script_name =404;
+        try_files \$uri \$uri/ /index.php\$args;
+}
 ----------
  /etc/nginx/sites-available/default
  change

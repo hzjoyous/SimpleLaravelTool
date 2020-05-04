@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Console\Commands\Hexo;
+namespace App\Console\Commands\Tool;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Finder\Finder;
 
-class Helper extends Command
+class HexoHelper extends Command
 {
     /**
      * The name and signature of the console command.

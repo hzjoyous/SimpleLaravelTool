@@ -13,16 +13,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
+Route::any('/', function () {
     return view('welcome');
 });
 
+Route::any('/phpinfo', fn() => phpinfo());
 
-Route::get('/phpinfo', function () {
-    phpinfo();
+Route::prefix('demo')->group(function () {
+    Route::any('/', 'WebDemoController@index');
+    Route::any('form', 'WebDemoController@form');
+    Route::any('/email', fn() => new App\Mail\UserWelcome());
 });
 
-Route::get('/demo','WebDemoController@index');
 
 
-Route::get('/form','WebDemoController@form');
+

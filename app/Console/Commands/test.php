@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Console\Commands\Tool\str;
+use App\Console\Commands\Tool\StrCommand;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 
@@ -39,7 +39,33 @@ class test extends Command
      */
     public function handle()
     {
+        $n = 1000000;
+        $start = microtime(true);
+         $this->splicingStrV1($n);
+//        echo $this->fibonacci(36).PHP_EOL;
+        // sleep(4);
+        $end = microtime(true);
+        echo ($end - $start);
+        return ;
+    }
 
-        return;
+    public function splicingStrV1($n)
+    {
+        $msg = "msg";
+        for ($i = 1; $i < $n; $i++) {
+            $msg .= "msg";
+        }
+        $msg = "msg";
+        return $msg;
+    }
+
+    public function fibonacci($n)
+    {
+        if ($n <= 1) {
+            $res = 1;
+        } else {
+            $res = $this->fibonacci($n - 1) + $this->fibonacci($n - 2);
+        }
+        return $res;
     }
 }

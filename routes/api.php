@@ -18,17 +18,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/getNull','ApiDemoController@getNull');
-Route::get('/demo','ApiDemoController@index');
-Route::post('/demo','ApiDemoController@index');
+Route::any('/demo', 'ApiDemoController@index');
+Route::any('/show-request', 'ApiDemoController@showRequest');
+Route::get('/cookie-look', 'ApiDemoController@cookieLook');
+Route::get('/showCode', 'ApiDemoController@showCode');
+Route::post('/upload', 'ApiDemoController@uploads');
 
-Route::get('/rgps','ApiDemoController@rgps');
-Route::post('/rgps','ApiDemoController@rgps');
-
-Route::get('/cookie-look','ApiDemoController@cookieLook');
-
-
-Route::get('/showCode','ApiDemoController@showCode');
-
-
-Route::post('/uploadFile','ApiDemoController@uploadFile');
+Route::prefix('/tool')->group(function () {
+    Route::get('', 'ToolController@index');
+    Route::get('opCacheClean', 'ToolController@opCacheClean');
+});

@@ -58,7 +58,7 @@ class DoubanCommand extends Command
     private $mongoDBDatabase;
 
     /**
-     * @var DoubanHttpClient $doubanClient 
+     * @var DoubanHttpClient $doubanClient
      */
     private $doubanClient;
 

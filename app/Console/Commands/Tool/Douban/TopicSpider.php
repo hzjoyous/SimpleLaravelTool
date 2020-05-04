@@ -14,14 +14,6 @@ use Redis;
 class TopicSpider extends Command
 {
     /**
-     *  php artisan z:douban:t slb
-     *  # ps -ef|grep "douban" | grep -v grep | awk '{print $2}' |  xargs kill -9
-     *  php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log &
-     *  php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log &
-     *  php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log &
-     *  php artisan z:douban:top slu >> ~/wsl.log & php artisan z:douban:top slu >> ~/wsl.log &
-     */
-    /**
      * The name and signature of the console command.
      *
      * @var string
@@ -34,6 +26,7 @@ class TopicSpider extends Command
      * @var string
      */
     protected $description = 'Command description';
+
     /**
      * Create a new command instance.
      *
@@ -43,12 +36,13 @@ class TopicSpider extends Command
     {
         parent::__construct();
     }
+
     /**
      * @var MongoDBClient mongoDBClient
      */
     private $mongoDBClient;
     /**
-     * @var Database $mongoDBDatabase;
+     * @var Database $mongoDBDatabase ;
      */
     private $mongoDBDatabase;
     /**
@@ -109,7 +103,9 @@ class TopicSpider extends Command
                 break;
         }
         $this->output->success('success');
+        return;
     }
+
     /**
      * douban topic为groupPage的25倍，且数据较多，起一个队列进行分发爬取，以免爬到地老天荒
      */
@@ -136,6 +132,7 @@ class TopicSpider extends Command
         call_user_func_array([$this->redis, 'rPush'], $waitPush);
         $this->output->success("Finished inpout {$counter}");
     }
+
     /**
      * db.douban_topic_content.update({},{$set:{"group_id":586674}},{multi:true})
      */
@@ -150,13 +147,16 @@ class TopicSpider extends Command
             $topicInfoStr = '';
             while ($this->redis->lLen($this->redisListKey)) {
                 $topicInfoStr = $this->redis->lPop($this->redisListKey);
+                if (($lPopSuccess = $topicInfoStr) === false) {
+                    break;
+                }
                 $topicInfo = json_decode($topicInfoStr, 1);
                 $topicId = $topicInfo['topic_id'];
-                $replyNum =  (int) ($topicInfo['reply_num']);
+                $replyNum = (int)($topicInfo['reply_num']);
                 $groupId = $topicInfo['group_id'];
                 $insertTime = $topicInfo['insert_time'];
                 $start = 0;
-                $pageNum = (int) ($replyNum / 100) + 1;
+                $pageNum = (int)($replyNum / 100) + 1;
                 while ($pageNum--) {
                     $findResult = $topicContentCollection->findOne(['topic_id' => $topicId, 'page' => $start]);
                     //false &&
@@ -167,11 +167,11 @@ class TopicSpider extends Command
                         $topicContentCollection->insertOne([
                             'topic_id' => $topicId,
                             'page' => $start,
-                            'content' => (string) $content,
-                            'group_id' => (string) $groupId,
-                            'insert_time' => (string) $insertTime
+                            'content' => (string)$content,
+                            'group_id' => (string)$groupId,
+                            'insert_time' => (string)$insertTime
                         ]);
-                        if (strpos((string) $content, '<!DOCTYPE html>') === false) {
+                        if (strpos((string)$content, '<!DOCTYPE html>') === false) {
                             $this->error("error content : $content");
                             throw new \Exception('douban', 500);
                         }
