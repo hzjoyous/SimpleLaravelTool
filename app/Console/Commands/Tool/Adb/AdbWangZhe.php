@@ -37,8 +37,7 @@ class AdbWangZhe extends Command
      */
     public function handle()
     {
-        $adbPath = env('ADB_PATH');
-        $adbPathcs = config('ADB_PATH');
+        $adbPath = config('simple.adbPath');
         $stops = [];
         $standardL = 2280;
         $standardW = 1080;

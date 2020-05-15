@@ -37,7 +37,7 @@ class Time extends Command
      */
     public function handle()
     {
-        echo date('Y-m-d H:i:s',1587285815).PHP_EOL;
+        echo date('Y-m-d H:i:s',1588377533).PHP_EOL;
         echo time();
         echo PHP_EOL;
     }

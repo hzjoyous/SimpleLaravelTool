@@ -46,7 +46,7 @@ class Tmp extends Command
      */
     public function handle()
     {
-        $this->t(1);
+        echo config('simple.douban.s.userId');
         return;
     }
 

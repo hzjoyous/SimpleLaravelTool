@@ -47,8 +47,7 @@ class AdbDouYin extends Command
      */
     public function handle()
     {
-        $adbPath = env('ADB_PATH');
-        $adbPath = 'C:\Users\HZJ\AppData\Local\Android\Sdk\platform-tools\adb.exe';
+        $adbPath = config('simple.adbPath');
 
         $adbVersion = `$adbPath version`;
         $this->info($adbVersion);

@@ -7,6 +7,7 @@ use App\Utils\SimpleSystem;
 use Illuminate\Console\Command;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Client as MongoDBClient;
+use MongoDB\Database;
 
 class DoubanCommand extends Command
 {
@@ -45,22 +46,14 @@ class DoubanCommand extends Command
         $this->init();
         $this->doAction();
         // $this->del();
+        return;
     }
 
-    /**
-     * @var MongoDBClient mongoDBClient
-     */
-    private $mongoDBClient;
+    private MongoDBClient $mongoDBClient;
 
-    /**
-     * @var Database $mongoDBDatabase;
-     */
-    private $mongoDBDatabase;
+    private Database $mongoDBDatabase;
 
-    /**
-     * @var DoubanHttpClient $doubanClient
-     */
-    private $doubanClient;
+    private DoubanHttpClient $doubanClient;
 
     public function init()
     {
@@ -82,11 +75,11 @@ class DoubanCommand extends Command
         $topicContentCollection = $database->selectCollection('douban_topics_content');
         $filter = ['insert_time' => $doubanConfig->getInsertTime()];
         $findResult = $topicContentCollection->find($filter);
-        $counter  = 0;
+        $counter = 0;
         $this->info('find now');
         foreach ($findResult as $content) {
             $counter += 1;
-            $doubanID = env('douban_id');
+            $doubanID = config('simple.douban.s.userId');
             if (strpos($content['content'], $doubanID) !== false) {
                 $topicUrl = "https://www.douban.com/group/topic/{$content['topic_id']}/?start={$content['page']}";
                 if (SimpleSystem::isWin()) {
@@ -100,18 +93,18 @@ class DoubanCommand extends Command
 
     public function del()
     {
-        return ;
+        return;
         $client = new MongoDBClient();
         $database = $client->selectDatabase('db_simple_laravel');
         $topicContentCollection = $database->selectCollection('douban_topics');
         $filter = ['insert_time' => '1586781808'];
         $findResult = $topicContentCollection->find($filter);
-        $counter  = 0;
+        $counter = 0;
         $this->info('find now');
         foreach ($findResult as $content) {
             $counter += 1;
             /**
-             * @var \MongoDB\BSON\ObjectId $id
+             * @var ObjectId $id
              */
             $id = ($content['_id']);
             // dump((string) ($content['content']));
