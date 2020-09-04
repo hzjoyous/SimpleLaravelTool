@@ -12,14 +12,17 @@ class ZQQBotTool extends Command
      *  remark 命名规则
      * [前缀[.|·]][姓名]#[tag][:tagInfo][..[tag][:tagInfo]]
      *  前缀: Ztmp2020 | 临时好友
+     *         - zt20[-08[-xx]]
      *  前缀: Ztmp2019 | 临时好友
      *  前缀: R | remark is nickname no username
-     *  tag: T 老师
-     *  tag: S 专业方向（校园途径）
-     *  tag: F 来源（校外途径）
-     *  tag: D 区别（区分重名）
-     *  tag: Z 特殊编码
-     *  tag: R  | remark is nickname no username
+     *  tag: T(eacher) 老师
+     *  tag: S(peciality) 专业方向（校园途径）
+     *  tag: F(rom) 来源（校外途径）
+     *       - sdut
+     *  tag: D(ifferent) 区别（区分重名）
+     *  tag: I(nfo) 
+     *  tag: Z(zzz) 特殊编码
+     *  tag: R(remark)  | remark is nickname no username
      */
 
     /**
