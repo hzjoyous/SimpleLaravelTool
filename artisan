@@ -1,7 +1,6 @@
 #!/usr/bin/env php
 <?php
-set_time_limit ( 0 ); // 脚本执行没有时间限
-ini_set("memory_limit","-1"); //不限制内存
+
 define('LARAVEL_START', microtime(true));
 
 /*
@@ -18,9 +17,6 @@ define('LARAVEL_START', microtime(true));
 
 require __DIR__.'/vendor/autoload.php';
 
-/**
- * @var \Illuminate\Foundation\Application $app
- */
 $app = require_once __DIR__.'/bootstrap/app.php';
 
 /*

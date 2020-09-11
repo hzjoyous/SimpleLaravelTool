@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Model\Xz;
+namespace App\Models\Xz;
 
 use Illuminate\Database\Eloquent\Model;
 

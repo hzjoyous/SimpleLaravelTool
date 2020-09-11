@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Model\Xz;
+namespace App\Models\Xz;
 
 use Illuminate\Database\Eloquent\Model;
 
-class OrderPriceItem extends Model
+class BookOrderState extends Model
 {
     protected $connection = 'mysql.production';
 
-    protected $table = 'orderpriceitem';
+    protected $table = 'bookorderstate';
 }

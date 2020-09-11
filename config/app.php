@@ -39,7 +39,7 @@ return [
     |
     */
 
-    'debug' => env('APP_DEBUG', false),
+    'debug' => (bool) env('APP_DEBUG', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -66,6 +66,7 @@ return [
     | ahead and set this to a sensible default for you out of the box.
     |
     */
+    
     'timezone' => 'Asia/Shanghai',
     // 'timezone' => 'UTC',
 
@@ -174,9 +175,6 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-
-        // ide-helper
-        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
 
     ],
 

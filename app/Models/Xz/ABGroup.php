@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Model\Xz;
+namespace App\Models\Xz;
 
 use Illuminate\Database\Eloquent\Model;
 
-class OrderChargeHis extends Model
+class ABGroup extends Model
 {
     protected $connection = 'mysql.production';
 
-    protected $table = 'orderchargehis';
+    protected $table = 'abgroup';
 }

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Web\WebDemoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,15 +14,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::any('/', function () {
+Route::get('/', function () {
     return view('welcome');
 });
+
 
 Route::any('/phpinfo', fn() => phpinfo());
 
 Route::prefix('demo')->group(function () {
-    Route::any('/', 'WebDemoController@index');
-    Route::any('form', 'WebDemoController@form');
+    Route::any('/', [WebDemoController::class, 'index']);
+    Route::any('form', [WebDemoController::class, 'form']);
     Route::any('/email', fn() => new App\Mail\UserWelcome());
 });
 
