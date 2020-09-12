@@ -40,6 +40,7 @@ class Demo4MongoDb extends Command
     {
         $this->extMongoDB();
         $this->libMongoDb();
+        return ;
     }
 
     private function mongoDemo()

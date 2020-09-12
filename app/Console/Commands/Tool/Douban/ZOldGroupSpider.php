@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\Tool\Douban;
 
-use App\HttpClient\DoubanHttpClient;
+use App\RemoteClient\HttpClientDouBan;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Cookie\SetCookie;
@@ -21,12 +21,12 @@ class ZOldGroupSpider extends Command
      * php artisan z:douban:group s
      * php artisan z:douban:group b
      * php artisan z:douban:group bm
-     * 
+     *
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'old:douban:group 
+    protected $signature = 'old:douban:group
     {mode=n :运行模式,s(蜘蛛),b(构建),bm(入库mongodb)}';
 
     /**
@@ -101,14 +101,14 @@ class ZOldGroupSpider extends Command
     private $mongoDBDatabase;
 
     /**
-     * @var DoubanHttpClient $doubanClient 
+     * @var HttpClientDouBan $doubanClient
      */
     private $doubanClient;
 
     public function init()
     {
 
-        $this->doubanClient = new DoubanHttpClient();
+        $this->doubanClient = new HttpClientDouBan();
 
         $this->mongoDBClient = new MongoDBClient();
 

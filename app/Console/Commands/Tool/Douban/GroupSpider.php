@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\Tool\Douban;
 
-use App\HttpClient\DoubanHttpClient;
+use App\RemoteClient\HttpClientDouBan;
 
 ;
 
@@ -99,7 +99,7 @@ class GroupSpider extends Command
     private $mongoDBDatabase;
 
     /**
-     * @var DoubanHttpClient $doubanClient
+     * @var HttpClientDouBan $doubanClient
      */
     private $doubanClient;
 
@@ -121,7 +121,7 @@ class GroupSpider extends Command
         $this->redis->setOption(Redis::OPT_READ_TIMEOUT, -1);
         $this->redisPassWord && $this->redis->auth($this->redisPassWord);
 
-        $this->doubanClient = new DoubanHttpClient();
+        $this->doubanClient = new HttpClientDouBan();
 
         $this->mongoDBClient = new MongoDBClient();
 

@@ -1,12 +1,12 @@
 <?php
 
 
-namespace App\HttpClient;
+namespace App\RemoteClient;
 
 
 use GuzzleHttp\Client;
 
-class CQHttpClient
+class HttpClientCQ
 {
     /**
      * @var Client $client

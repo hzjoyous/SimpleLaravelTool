@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\Tool\Douban;
 
-use App\HttpClient\DoubanHttpClient;
+use App\RemoteClient\HttpClientDouBan;
 use App\Utils\SimpleSystem;
 use Illuminate\Console\Command;
 use MongoDB\BSON\ObjectId;
@@ -53,11 +53,11 @@ class DoubanCommand extends Command
 
     private Database $mongoDBDatabase;
 
-    private DoubanHttpClient $doubanClient;
+    private HttpClientDouBan $doubanClient;
 
     public function init()
     {
-        $this->doubanClient = new DoubanHttpClient();
+        $this->doubanClient = new HttpClientDouBan();
 
         $this->mongoDBClient = new MongoDBClient();
 

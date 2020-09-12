@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\HttpClient;
+namespace App\RemoteClient;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Cookie\SetCookie;
 
-class TestHttpClient
+class HttpClientTest
 {
     /**
      * @var Client $client

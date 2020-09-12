@@ -17,10 +17,10 @@ class Demo extends Command
      * email:send {user} {--Q|queue}
      * email:send {user} {--queue=default}
      * php artisan email:send 1 --queue=default
-     * 
+     *
      * email:send {user*}
      * php artisan email:send foo bar
-     * 
+     *
      * email:send {user} {--id=*}
      * php artisan email:send --id=1 --id=2
      */
@@ -121,5 +121,6 @@ class Demo extends Command
         $bar->finish();
 
         $this->output->success('You have a new command! Now make it your own! Pass --help to see your options.');
+        return 0;
     }
 }

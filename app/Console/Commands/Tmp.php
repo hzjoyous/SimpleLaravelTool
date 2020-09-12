@@ -2,12 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\HttpClient\AipHttpClient;
 use Illuminate\Console\Command;
-use League\Csv\Reader;
-use League\Csv\Statement;
-use PhpOffice\PhpWord\IOFactory;
-use PhpOffice\PhpSpreadsheet\IOFactory as SpreadsheetIOFactory;
 
 class Tmp extends Command
 {

@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\Tool\Douban;
 
-use App\HttpClient\DoubanHttpClient;
+use App\RemoteClient\HttpClientDouBan;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Cookie\SetCookie;
@@ -46,7 +46,7 @@ class TopicSpider extends Command
      */
     private $mongoDBDatabase;
     /**
-     * @var DoubanHttpClient $doubanClient
+     * @var HttpClientDouBan $doubanClient
      */
     private $doubanClient;
 
@@ -62,7 +62,7 @@ class TopicSpider extends Command
     public function init()
     {
 
-        $this->doubanClient = new DoubanHttpClient();
+        $this->doubanClient = new HttpClientDouBan();
         $this->redis = new Redis();
         $this->redis->connect($this->redisHost, $this->redisPort);
         $this->redis->setOption(Redis::OPT_READ_TIMEOUT, -1);

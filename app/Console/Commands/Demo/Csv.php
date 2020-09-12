@@ -37,6 +37,6 @@ class Csv extends Command
      */
     public function handle()
     {
-        //
+        return 0;
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\Tool;
 
-use App\HttpClient\CQHttpClient;
+use App\RemoteClient\HttpClientCQ;
 use Illuminate\Console\Command;
 
 class ZQQBotTmp extends Command
@@ -41,7 +41,7 @@ class ZQQBotTmp extends Command
      */
     public function handle()
     {
-        $client = new CQHttpClient();
+        $client = new HttpClientCQ();
 //        $result = $client->getGroupList();
 //        $result = array_map(function($item){
 //            return $item['group_id'];
