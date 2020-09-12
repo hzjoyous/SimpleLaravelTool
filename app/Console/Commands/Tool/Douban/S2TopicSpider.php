@@ -11,8 +11,10 @@ use MongoDB\Client as MongoDBClient;
 use MongoDB\Database;
 use Redis;
 
-class TopicSpider extends Command
+class S2TopicSpider extends Command
 {
+    use DoubanTrait;
+
     /**
      * The name and signature of the console command.
      *
@@ -37,43 +39,7 @@ class TopicSpider extends Command
         parent::__construct();
     }
 
-    /**
-     * @var MongoDBClient mongoDBClient
-     */
-    private $mongoDBClient;
-    /**
-     * @var Database $mongoDBDatabase ;
-     */
-    private $mongoDBDatabase;
-    /**
-     * @var HttpClientDouBan $doubanClient
-     */
-    private $doubanClient;
 
-    /**
-     * @var Redis $redis
-     */
-    private $redis;
-    private $redisHost = '127.0.0.1';
-    private $redisPort = 6379;
-    private $redisPassWord = '';
-    private $redisListKey = 'douban:topic:list';
-
-    public function init()
-    {
-
-        $this->doubanClient = new HttpClientDouBan();
-        $this->redis = new Redis();
-        $this->redis->connect($this->redisHost, $this->redisPort);
-        $this->redis->setOption(Redis::OPT_READ_TIMEOUT, -1);
-        $this->redisPassWord && $this->redis->auth($this->redisPassWord);
-
-        $this->mongoDBClient = new MongoDBClient();
-
-        $this->mongoDBDatabase = $this->mongoDBClient->selectDatabase('db_simple_laravel');
-
-        return $this;
-    }
 
     /**
      * Execute the console command.
@@ -84,12 +50,8 @@ class TopicSpider extends Command
     {
         $mode = $this->argument('mode');
 
-        $doubanConfig = new DoubanConfig(__DIR__ . '/config.json');
+        $doubanConfig = new DouBanConfig(__DIR__ . '/config.json');
         $insertTime = $doubanConfig->getInsertTime();
-
-        $doubanPath = storage_path('tmp' . DIRECTORY_SEPARATOR . 'douban');
-        if (is_dir($doubanPath) || mkdir($doubanPath, 0777, true)) {
-        }
 
         $this->init();
         switch ($mode) {
@@ -139,9 +101,6 @@ class TopicSpider extends Command
     public function sListUse()
     {
         $mongoDBDatabase = $this->mongoDBDatabase;
-        /**
-         * @var Database $mongoDBDatabase
-         */
         $topicContentCollection = $mongoDBDatabase->selectCollection('douban_topics_content');
         try {
             $topicInfoStr = '';

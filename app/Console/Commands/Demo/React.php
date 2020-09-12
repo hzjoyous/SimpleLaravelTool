@@ -17,7 +17,7 @@ class React extends Command
      *
      * @var string
      */
-    protected $signature = 'demo:react';
+    protected $signature = 'zdemo:react';
 
     /**
      * The console command description.
@@ -76,6 +76,7 @@ class React extends Command
             $this->info("simpleNum:{$simpleNum} run");
             $simpleNum += 1;
         }
+        return ;
     }
 
     public function example1()

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Demo;
 
 use App\Models\Dog;
 use Illuminate\Console\Command;
@@ -13,7 +13,7 @@ class DemoSqlite extends Command
      *
      * @var string
      */
-    protected $signature = 'demo:sqlite';
+    protected $signature = 'zdemo:sqlite';
 
     /**
      * The console command description.

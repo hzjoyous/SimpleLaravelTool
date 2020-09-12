@@ -11,7 +11,7 @@ class InfiniteClass extends Command
      *
      * @var string
      */
-    protected $signature = 'demo:inf';
+    protected $signature = 'zdemo:inf';
 
     /**
      * The console command description.
@@ -73,5 +73,6 @@ class InfiniteClass extends Command
         };
         $list = $buildList(0);
         dump($list);
+        return ;
     }
 }

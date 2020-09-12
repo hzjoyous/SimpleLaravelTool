@@ -11,7 +11,7 @@ class Demo extends Command
      *
      * @var string
      */
-    protected $signature = 'demo:demo {user : The ID of the user} {--queue= :Whether the job should be queued}';
+    protected $signature = 'z:demo {user : The ID of the user} {--queue= :Whether the job should be queued}';
 
     /**
      * email:send {user} {--Q|queue}

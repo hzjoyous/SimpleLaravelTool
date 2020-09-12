@@ -12,7 +12,7 @@ class Demo4es extends Command
      *
      * @var string
      */
-    protected $signature = 'demo:es';
+    protected $signature = 'zdemo:es';
 
     /**
      * The console command description.
@@ -67,6 +67,7 @@ class Demo4es extends Command
 
         $response = $client->index($params);
         print_r($response);
-        
+        return ;
+
     }
 }

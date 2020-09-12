@@ -13,7 +13,7 @@ class XPath extends Command
      *
      * @var string
      */
-    protected $signature = 'demo:xPath 
+    protected $signature = 'zdemo:xPath
     {mode=0 :运行模式}';
 
     /**

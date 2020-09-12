@@ -9,15 +9,17 @@ use MongoDB\BSON\ObjectId;
 use MongoDB\Client as MongoDBClient;
 use MongoDB\Database;
 
-class DoubanCommand extends Command
+class S3SpiderResultShow extends Command
 {
+    use DoubanTrait;
+
     /**
      * The name and signature of the console command.
      *
      * php artisan z:douban:master
      * @var string
      */
-    protected $signature = 'z:douban:master';
+    protected $signature = 'z:douban:show';
 
     /**
      * The console command description.
@@ -43,32 +45,15 @@ class DoubanCommand extends Command
      */
     public function handle()
     {
-        $this->init();
+        $this->init(__DIR__ . '/config.json');
         $this->doAction();
         // $this->del();
         return;
     }
 
-    private MongoDBClient $mongoDBClient;
-
-    private Database $mongoDBDatabase;
-
-    private HttpClientDouBan $doubanClient;
-
-    public function init()
-    {
-        $this->doubanClient = new HttpClientDouBan();
-
-        $this->mongoDBClient = new MongoDBClient();
-
-        $this->mongoDBDatabase = $this->mongoDBClient->selectDatabase('db_simple_laravel');
-
-        return $this;
-    }
-
     public function doAction()
     {
-        $doubanConfig = new DoubanConfig(__DIR__ . '/config.json');
+        $doubanConfig = new DouBanConfig(__DIR__ . '/config.json');
 
         $client = new MongoDBClient();
         $database = $client->selectDatabase('db_simple_laravel');
@@ -77,16 +62,22 @@ class DoubanCommand extends Command
         $findResult = $topicContentCollection->find($filter);
         $counter = 0;
         $this->info('find now');
-        foreach ($findResult as $content) {
-            $counter += 1;
-            $doubanID = config('simple.douban.s.userId');
-            if (strpos($content['content'], $doubanID) !== false) {
-                $topicUrl = "https://www.douban.com/group/topic/{$content['topic_id']}/?start={$content['page']}";
-                if (SimpleSystem::isWin()) {
-                    exec("start $topicUrl");
+        $doubanID = config('simple.douban.s.userId');
+        dump($doubanID);
+        try {
+
+            foreach ($findResult as $content) {
+                $counter += 1;
+                if (strpos($content['content'], $doubanID) !== false) {
+                    $topicUrl = "https://www.douban.com/group/topic/{$content['topic_id']}/?start={$content['page']}";
+                    if (SimpleSystem::isWin()) {
+                        exec("start $topicUrl");
+                    }
+                    echo ("https://www.douban.com/group/topic/{$content['topic_id']}/?start={$content['page']}") . PHP_EOL;
                 }
-                echo ("https://www.douban.com/group/topic/{$content['topic_id']}/?start={$content['page']}") . PHP_EOL;
             }
+        } catch (\Exception $exceptio){
+            dump($doubanID);
         }
         $this->output->success("Finished from {$counter} row");
     }
@@ -114,3 +105,4 @@ class DoubanCommand extends Command
         }
     }
 }
+

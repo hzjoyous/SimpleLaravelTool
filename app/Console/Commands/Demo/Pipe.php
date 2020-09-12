@@ -11,7 +11,7 @@ class Pipe extends Command
      *
      * @var string
      */
-    protected $signature = 'demo:pipe';
+    protected $signature = 'zdemo:pipe';
 
     /**
      * The console command description.
@@ -44,5 +44,7 @@ class Pipe extends Command
             }
             fclose($fp);
         }
+        return ;
+
     }
 }

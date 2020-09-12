@@ -39,11 +39,11 @@ class Fork extends Command
     public function handle()
     {
         //
-        if(SimpleSystem::getOS()!==SimpleSystem::OS_LINUX){
+        if (SimpleSystem::getOS() !== SimpleSystem::OS_LINUX) {
             $this->error("not linux");
-            return ;
+            return;
         }
 
-        
+        return;
     }
 }

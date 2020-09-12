@@ -12,7 +12,7 @@ class Demo4phpRedis extends Command
      *
      * @var string
      */
-    protected $signature = 'demo:phpredis';
+    protected $signature = 'zdemo:phpredis';
 
     /**
      * The console command description.
@@ -48,7 +48,7 @@ class Demo4phpRedis extends Command
      */
     public function handle()
     {
-        // ext-redis https://github.com/phpredis/phpredis   
+        // ext-redis https://github.com/phpredis/phpredis
         $this->info("This is Redis Demo by phpRedis");
 
         $this->redisInit();
@@ -182,7 +182,7 @@ $result = $this->redis->hGet($redisHashKey,\'name\');');
         $this->redis->sAdd($redisSetKey, 'v1', 'v2', 'v3');    // int(2)
         $result = $this->redis->sMembers($redisSetKey);
         dump($result);
-        
+
         $result = $this->redis->del($redisSetKey);
         if ($result === 1) {
             $this->output->success('redisSetKey 运行完毕清除成功');
@@ -199,7 +199,7 @@ $result = $this->redis->hGet($redisHashKey,\'name\');');
         $this->redis->zRem('z', 'v2', 'v3');                           // int(2)
         $this->redis->zAdd('z', ['NX'], 5, 'v5');                      // int(1)
         $this->redis->zAdd('z', ['NX'], 6, 'v5');                      // int(0)
-        
+
 
         dump($this->redis->zRange('z', 0, -1));
         // Output:
@@ -218,7 +218,7 @@ $result = $this->redis->hGet($redisHashKey,\'name\');');
         //   ["v5"]=> float(5)
         //   ["v6"]=> float(8)
         // }
-        
+
         $result = $this->redis->del($redisSortSetKey);
         if ($result === 1) {
             $this->output->success('redisSortSetKey 运行完毕清除成功');

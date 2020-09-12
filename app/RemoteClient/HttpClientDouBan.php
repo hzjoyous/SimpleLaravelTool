@@ -15,6 +15,8 @@ class HttpClientDouBan
      */
     protected $client;
 
+    protected $host = "www.douban.com";
+
     public function __construct()
     {
         // 文件读取Cookie

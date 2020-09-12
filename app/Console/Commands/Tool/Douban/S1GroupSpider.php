@@ -10,14 +10,12 @@ use Exception;
 use Illuminate\Console\Command;
 use MongoDB\Collection;
 use Symfony\Component\DomCrawler\Crawler;
-use MongoDB\Client as MongoDBClient;
-use MongoDB\Database;
-use \Redis;
 
-class GroupSpider extends Command
+class S1GroupSpider extends Command
 {
+    use DoubanTrait;
     /**
-     * php artisan z:douban:group s
+     * php artisan z:douban:group
      *
      * The name and signature of the console command.
      *
@@ -44,99 +42,60 @@ class GroupSpider extends Command
 
 
     /**
-     * Execute the console command.
-     *
-     * @return mixed
+     * @throws Exception
      */
     public function handle()
     {
-        $doubanConfig = new DoubanConfig(__DIR__ . '/config.json');
-        $this->init();
+        $this->init(__DIR__ . '/config.json');
+
         $groupList = [];
         $useGroupList = false;
         if ($useGroupList) {
-            foreach ($doubanConfig->getGroupList() as $value) {
-                $groupList[] = $value['id'];
-            }
+            $groupList = array_map(function ($value) {
+                return $value['id'];
+            }, $this->doubanConfig->getGroupList());
         } else {
-            $groupList[] = $doubanConfig->getGroupId();
+            $groupList[] = $this->doubanConfig->getGroupId();
         }
 
         foreach ($groupList as $groupId) {
-            $this->info("当前groupId" . $groupId);
-            $doubanPath = storage_path('tmp' . DIRECTORY_SEPARATOR . 'douban');
-            $doubanGroupPath = $doubanPath . DIRECTORY_SEPARATOR . 'group';
-            $groupIdPath = $doubanGroupPath . DIRECTORY_SEPARATOR . $groupId;
-
-            is_dir($doubanPath) || mkdir($doubanPath, 0777, true);
-            is_dir($doubanGroupPath) || mkdir($doubanGroupPath, 0777, true);
-            is_dir($groupIdPath) || mkdir($groupIdPath, 0777, true);
-
-
-            try {
-                $this->s($groupIdPath, $groupId, $doubanConfig);
-            } catch (Exception $e) {
-                if ($e->getCode() === self::CONTINUE_S) {
-                    $this->warn($e->getMessage());
-                } else {
-                    throw $e;
-                }
-            }
-
-            $this->output->success("groupId {$groupId} success");
+            $this->runner($groupId, $this->doubanConfig);
         }
         return;
     }
 
-    /**
-     * @var MongoDBClient mongoDBClient
-     */
-    private $mongoDBClient;
-
-    /**
-     * @var Database $mongoDBDatabase ;
-     */
-    private $mongoDBDatabase;
-
-    /**
-     * @var HttpClientDouBan $doubanClient
-     */
-    private $doubanClient;
-
-    /**
-     * @var Redis $redis
-     */
-    private $redis;
-    private $redisHost = '127.0.0.1';
-    private $redisPort = 6379;
-    private $redisPassWord = '';
-
-    /**
-     * @return $this
-     */
-    public function init()
+    protected function runner($groupId, DouBanConfig $doubanConfig)
     {
-        $this->redis = new Redis();
-        $this->redis->connect($this->redisHost, $this->redisPort);
-        $this->redis->setOption(Redis::OPT_READ_TIMEOUT, -1);
-        $this->redisPassWord && $this->redis->auth($this->redisPassWord);
+        $this->info("当前groupId" . $groupId);
+        $doubanPath = storage_path('tmp' . DIRECTORY_SEPARATOR . 'douban');
+        $doubanGroupPath = $doubanPath . DIRECTORY_SEPARATOR . 'group';
+        $groupIdPath = $doubanGroupPath . DIRECTORY_SEPARATOR . $groupId;
 
-        $this->doubanClient = new HttpClientDouBan();
+        is_dir($doubanPath) || mkdir($doubanPath, 0777, true);
+        is_dir($doubanGroupPath) || mkdir($doubanGroupPath, 0777, true);
+        is_dir($groupIdPath) || mkdir($groupIdPath, 0777, true);
 
-        $this->mongoDBClient = new MongoDBClient();
+        try {
+            $this->s($groupIdPath, $groupId, $doubanConfig);
+        } catch (Exception $e) {
+            if ($e->getCode() === self::CONTINUE_S) {
+                $this->warn($e->getMessage());
+            } else {
+                throw $e;
+            }
+        }
 
-        $this->mongoDBDatabase = $this->mongoDBClient->selectDatabase('db_simple_laravel');
-
-        return $this;
+        $this->output->success("groupId {$groupId} success");
     }
+
 
     /**
      * @param $groupIdPath
      * @param $groupId
-     * @param DoubanConfig $doubanConfig
+     * @param DouBanConfig $doubanConfig
      * @throws Exception
      */
-    public function s($groupIdPath, $groupId, DoubanConfig $doubanConfig)
+    public function s($groupIdPath, $groupId, DouBanConfig $doubanConfig)
     {
         $counter = 0;
         $n = $doubanConfig->getStart();
@@ -150,21 +109,19 @@ class GroupSpider extends Command
 
             if ($isDown = $this->redis->get($cacheKey)) {
                 $content = file_get_contents($groupIdPath . DIRECTORY_SEPARATOR . $n . '.html');
-                $n += 25;
-                $this->info("已抓取->$isDown 不进行操作跳过");
-                continue;
+                $this->checkContent($content);
+                $this->info("已抓取->$isDown 不进行操作");
             } else {
                 $this->info("https://www.douban.com/group/$groupId/discussion?start={$n}");
                 $content = $this->doubanClient->getTopicListByGroupId($groupId, $n);
+                $this->checkContent($content);
+                $this->downFile($groupIdPath . DIRECTORY_SEPARATOR . $n . '.html', $content);
+                $this->inputDB($content, $groupId, $insertTime, $n);
+                $this->redis->set($cacheKey, true, 3600);
+                $this->info("success:{$n}/{$endNumber},groupId:{$groupId},useTime:" . (microtime(true) - LARAVEL_START));
             }
 
-            $this->checkContent($content);
-            $this->downFile($groupIdPath . DIRECTORY_SEPARATOR . $n . '.html', $content);
-            $this->inputDB($content, $groupId, $insertTime, $n);
-
-            $this->redis->set($cacheKey, true, 3600);
             $n += 25;
-            $this->info("success:{$n}/{$endNumber},groupId:{$groupId},useTime:" . (microtime(true) - LARAVEL_START));
         }
     }
 
@@ -242,9 +199,6 @@ class GroupSpider extends Command
             $this->warn('no need insert' . PHP_EOL . "https://www.douban.com/group/$groupId/discussion?start=" . $n);
             throw new Exception("不存在数据,跳过本组循环.注意检查本次url,https://www.douban.com/group/$groupId/discussion?start=" . $n, self::CONTINUE_S);
         }
-        /**
-         * @var Collection $collection
-         */
         $collection = $this->mongoDBDatabase->selectCollection('douban_topics');
         $result = $collection->insertMany(
             $waitInsert

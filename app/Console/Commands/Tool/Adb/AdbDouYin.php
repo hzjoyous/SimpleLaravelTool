@@ -18,17 +18,19 @@ class AdbDouYin extends Command
      *
      * @var string
      */
-    protected $description = '
-                            anyproxy -i
-                            anyproxy -i  -r douyin.js
+    protected $description = '';
 
-                            C:\Users\HZJ\AppData\Local\Android\Sdk\platform-tools\adb.exe connect 127.0.0.1:21503
-
-                            grep -h -r \'signature\' /mnt/c/Users/HZJ/.anyproxy/cache/> signature.1329.log
-
-                            unique_id
-                            owner_handle
-';
+    /**
+     *   anyproxy -i
+     *   anyproxy -i  -r douyin.js
+     *
+     *   C:\Users\HZJ\AppData\Local\Android\Sdk\platform-tools\adb.exe connect 127.0.0.1:21503
+     *
+     *   grep -h -r 'signature' /mnt/c/Users/HZJ/.anyproxy/cache/> signature.1329.log
+     *
+     *   unique_id
+     *   owner_handle
+     */
 
     /**
      * Create a new command instance.

@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\Tool\Douban;
 
-class DoubanConfig
+class DouBanConfig
 {
     private $groupId;
     private $start;

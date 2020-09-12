@@ -42,11 +42,14 @@ class Tmp extends Command
     public function handle()
     {
         echo config('simple.douban.s.userId');
+        $this->t();
         return;
     }
 
     public function t(...$data)
     {
         var_dump($data);
+        $a = true || $a = false;
+        dump($a);
     }
 }
