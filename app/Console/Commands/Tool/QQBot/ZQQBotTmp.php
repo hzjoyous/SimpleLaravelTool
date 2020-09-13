@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands\Tool;
+namespace App\Console\Commands\Tool\QQBot;
 
 use App\RemoteClient\HttpClientCQ;
 use Illuminate\Console\Command;

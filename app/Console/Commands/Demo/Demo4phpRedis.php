@@ -8,6 +8,10 @@ use Redis;
 class Demo4phpRedis extends Command
 {
     /**
+     * redis-cli
+     * flushall
+     */
+    /**
      * The name and signature of the console command.
      *
      * @var string

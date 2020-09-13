@@ -43,6 +43,7 @@ class Fork extends Command
             $this->error("not linux");
             return;
         }
+        return ;
         $pid = pcntl_fork();
         //父进程和子进程都会执行下面代码
         if ($pid == -1) {

@@ -7,10 +7,6 @@ use Illuminate\Console\Command;
 class Tmp extends Command
 {
     /**
-     * redis-cli
-     * flushall
-     */
-    /**
      * The name and signature of the console command.
      *
      * @var string $signature
@@ -41,7 +37,7 @@ class Tmp extends Command
      */
     public function handle()
     {
-        echo config('simple.douban.s.userId');
+        $this->line(config('simple.douban.s.userId',''));;
         $this->t();
         return;
     }

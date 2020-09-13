@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Mail\Message;
 use Illuminate\Support\Facades\Mail;
 
-class SendEmailByQ extends Command
+class EmailByQ extends Command
 {
     /**
      * The name and signature of the console command.

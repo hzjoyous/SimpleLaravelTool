@@ -63,21 +63,15 @@ class S3SpiderResultShow extends Command
         $counter = 0;
         $this->info('find now');
         $doubanID = config('simple.douban.s.userId');
-        dump($doubanID);
-        try {
-
-            foreach ($findResult as $content) {
-                $counter += 1;
-                if (strpos($content['content'], $doubanID) !== false) {
-                    $topicUrl = "https://www.douban.com/group/topic/{$content['topic_id']}/?start={$content['page']}";
-                    if (SimpleSystem::isWin()) {
-                        exec("start $topicUrl");
-                    }
-                    echo ("https://www.douban.com/group/topic/{$content['topic_id']}/?start={$content['page']}") . PHP_EOL;
+        foreach ($findResult as $content) {
+            $counter += 1;
+            if (strpos($content['content'], $doubanID) !== false) {
+                $topicUrl = "https://www.douban.com/group/topic/{$content['topic_id']}/?start={$content['page']}";
+                if (SimpleSystem::isWin()) {
+                    exec("start $topicUrl");
                 }
+                echo ("https://www.douban.com/group/topic/{$content['topic_id']}/?start={$content['page']}") . PHP_EOL;
             }
-        } catch (\Exception $exceptio){
-            dump($doubanID);
         }
         $this->output->success("Finished from {$counter} row");
     }

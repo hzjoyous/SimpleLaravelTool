@@ -2,9 +2,11 @@
 
 namespace App\Console\Commands\Tool\Douban;
 
+use Illuminate\Support\Facades\Cache;
+
 class DouBanConfig
 {
-    private $groupId;
+    private string $groupId;
     private $start;
     private $end;
     private $insertTime;
@@ -14,7 +16,7 @@ class DouBanConfig
     {
         $config = file_get_contents($configFilePath);
         $config = json_decode($config, true);
-        foreach (['groupId', 'start', 'end', 'insertTime',] as $waitCheckKey) {
+        foreach (['groupId', 'start', 'end'] as $waitCheckKey) {
             if (!array_key_exists($waitCheckKey, $config)) {
                 throw new \Exception("config 缺失 $waitCheckKey 字段");
             }
@@ -22,7 +24,13 @@ class DouBanConfig
         $this->groupId  = (string) $config['groupId'];
         $this->start = $config['start'];
         $this->end = $config['end'];
-        $this->insertTime = $config['insertTime'];
+        $DouBanCacheKey = 'DouBan:insertTime';
+        $insertTime = Cache::get($DouBanCacheKey);
+        if(is_null($insertTime)){
+            Cache::put($DouBanCacheKey,time(),3600);
+            $insertTime = Cache::get($DouBanCacheKey);
+        }
+        $this->insertTime = $insertTime;
         $this->groupList = $config['groupList'];
     }
 

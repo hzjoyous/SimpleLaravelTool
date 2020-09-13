@@ -2,14 +2,7 @@
 
 namespace App\Console\Commands\Tool\Douban;
 
-use App\RemoteClient\HttpClientDouBan;
-use GuzzleHttp\Client;
-use GuzzleHttp\Cookie\CookieJar;
-use GuzzleHttp\Cookie\SetCookie;
 use Illuminate\Console\Command;
-use MongoDB\Client as MongoDBClient;
-use MongoDB\Database;
-use Redis;
 
 class S2TopicSpider extends Command
 {
@@ -40,11 +33,8 @@ class S2TopicSpider extends Command
     }
 
 
-
     /**
-     * Execute the console command.
-     *
-     * @return mixed
+     * @throws \Exception
      */
     public function handle()
     {
@@ -74,9 +64,6 @@ class S2TopicSpider extends Command
     public function sListBuild($insertTime)
     {
         $mongoDBDatabase = $this->mongoDBDatabase;
-        /**
-         * @var Database $mongoDBDatabase
-         */
         $collection = $mongoDBDatabase->selectCollection('douban_topics');
         $result = $collection->find(['insert_time' => $insertTime]);
         $result = $result->toArray();
@@ -118,6 +105,8 @@ class S2TopicSpider extends Command
                 $pageNum = (int)($replyNum / 100) + 1;
                 while ($pageNum--) {
                     $findResult = $topicContentCollection->findOne(['topic_id' => $topicId, 'page' => $start]);
+                    // 当前页面可能能为已经更新的最后一夜所以要检测是否有第二页，否则可能忽略部分信息
+                    // $findResult = $topicContentCollection->findOne(['topic_id' => $topicId, 'page' => $start + 1]);
                     //false &&
                     if ($findResult !== null) {
                         $this->line("{$topicId}_{$start} 已经存在,跳过");

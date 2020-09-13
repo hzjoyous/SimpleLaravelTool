@@ -75,7 +75,6 @@ HTML;
                     'num' => trim($crawler->filter('span[class="num"]')->text(), "()")
                 ];
             });
-        // dd($result);
 
         uasort($result, function ($x, $y) {
             // $x['num'] ??= 10000;
@@ -87,53 +86,5 @@ HTML;
 
 
         return;
-
-        $result = $crawler->filter('table[class="olt"]')
-            ->filter('tr')
-            ->reduce(function (Crawler $crawler, $i) {
-                if ($i < 1) {
-                    return false;
-                }
-                return true;
-            })
-            ->each(function (Crawler $node, $i) {
-                $result = $node
-                    ->filter('td')
-                    ->each(function (Crawler $node, $i) {
-                        $result = '';
-                        switch ($i) {
-                            case 0:
-                                $topicUrl =  $node->filter('a')->attr('href');
-                                $result = (explode('/', $topicUrl))[5];
-                                break;
-                            case 1:
-                                $peopleUrl = $node->filter('a')->attr('href');
-                                $result = (explode('/', $peopleUrl))[4];
-                                break;
-                            case 2:
-                                $replyNum = $node->text();
-                                $result = $replyNum;
-                                break;
-                            case 3:
-                                $lastUpdateDate = $node->text();
-                                $result = $lastUpdateDate;
-                                break;
-                            default:
-                                break;
-                        }
-                        return $result;
-                    });
-                return $result;
-            });
-
-        array_map(function ($item) {
-            return [
-                'topic_id' => $item[0],
-                'people_id' => $item[1],
-                'reply_num' => $item[2],
-                'group_id' => 0,
-                'insert_time' => 0,
-            ];
-        }, $result);
     }
 }

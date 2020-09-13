@@ -6,7 +6,7 @@ use Endroid\QrCode\QrCode;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
-class Qr extends Command
+class QrBuilder extends Command
 {
     /**
      * The name and signature of the console command.

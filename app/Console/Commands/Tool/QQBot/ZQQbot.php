@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands\Tool;
+namespace App\Console\Commands\Tool\QQBot;
 
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;

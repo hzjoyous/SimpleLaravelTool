@@ -5,6 +5,7 @@ namespace App\Console\Commands\Tool;
 use App\Utils\SimpleSystem;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
+use PhpParser\Node\Scalar\MagicConst\Dir;
 
 class WindowsPic extends Command
 {
@@ -39,12 +40,18 @@ class WindowsPic extends Command
      */
     public function handle()
     {
-        if (SimpleSystem::getOS() !== SimpleSystem::OS_WIN) {
-            $this->error('当前系统非windows，执行终止');
-            return;
+        $winPic = DIRECTORY_SEPARATOR . 'Users' . DIRECTORY_SEPARATOR . 'HZJ' . DIRECTORY_SEPARATOR . 'AppData' . DIRECTORY_SEPARATOR . 'Local' . DIRECTORY_SEPARATOR . 'Packages' . DIRECTORY_SEPARATOR . 'Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy' . DIRECTORY_SEPARATOR . 'LocalState' . DIRECTORY_SEPARATOR . 'Assets';
+        $tmp = DIRECTORY_SEPARATOR . 'Users' . DIRECTORY_SEPARATOR . 'HZJ' . DIRECTORY_SEPARATOR . 'Desktop' . DIRECTORY_SEPARATOR . 'tmp1';
+
+        if (SimpleSystem::getOS() === SimpleSystem::OS_WIN) {
+            $rootPath = 'C:';
+        } else {
+            $rootPath = DIRECTORY_SEPARATOR . 'mnt' . DIRECTORY_SEPARATOR . 'c';
         }
-        $winPic = 'C:\Users\HZJ\AppData\Local\Packages\Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\LocalState\Assets';
-        $tmp = 'C:\Users\HZJ\Desktop\tmp1';
+
+        $winPic = $rootPath . $winPic;
+        $tmp = $rootPath . $tmp;
+
         $fileSystem = new Filesystem();
 
         foreach ($fileSystem->allFiles($winPic) as $file) {
@@ -52,13 +59,13 @@ class WindowsPic extends Command
             if ($file->getSize() < 1024 * 10) {
                 continue;
             }
-            dump($file);
-            $pathInfo         = pathinfo($relativePathname);
-            dump($relativePathname);
+            $pathInfo = pathinfo($relativePathname);
+            dump($pathInfo);
             if (!$fileSystem->isDirectory($tmp)) {
                 $fileSystem->makeDirectory($tmp, 0777, true);
             }
             $fileSystem->copy($winPic . DIRECTORY_SEPARATOR . $relativePathname, $tmp . DIRECTORY_SEPARATOR . $relativePathname . '.jpg');
         }
+        return;
     }
 }

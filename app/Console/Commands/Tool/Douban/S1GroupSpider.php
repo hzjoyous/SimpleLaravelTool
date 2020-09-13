@@ -2,13 +2,8 @@
 
 namespace App\Console\Commands\Tool\Douban;
 
-use App\RemoteClient\HttpClientDouBan;
-
-;
-
 use Exception;
 use Illuminate\Console\Command;
-use MongoDB\Collection;
 use Symfony\Component\DomCrawler\Crawler;
 
 class S1GroupSpider extends Command
@@ -129,12 +124,12 @@ class S1GroupSpider extends Command
      * @param $content
      * @throws Exception
      */
-    public function checkContent($content)
+    public function checkContent(string $content)
     {
-        if (strpos((string)$content, '<!DOCTYPE html>') === false) {
+        if (strpos($content, '<!DOCTYPE html>') === false) {
             throw new Exception("返回非网页" . $content);
         }
-        if (mb_strpos((string)$content, '你访问豆瓣的方式有点像机器人程序', 0, "UTF-8") !== false) {
+        if (mb_strpos($content, '你访问豆瓣的方式有点像机器人程序', 0, "UTF-8") !== false) {
             throw new Exception("数据返回异常");
         }
     }

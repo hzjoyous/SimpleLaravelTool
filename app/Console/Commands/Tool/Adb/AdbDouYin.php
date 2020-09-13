@@ -54,16 +54,16 @@ class AdbDouYin extends Command
         $adbVersion = `$adbPath version`;
         $this->info($adbVersion);
 
-        $standardH =  1440;
+        $standardH = 1440;
         $standardW = 960;
 
         $start = new Coordinate();
-        $start->x = $standardW / 2;
-        $start->y = (int) ($standardH / 7 * 4);
+        $start->x = (int)($standardW / 2);
+        $start->y = (int)($standardH / 7 * 4);
 
         $end = new Coordinate();
-        $end->x = $standardW / 2;
-        $end->y = (int) ($standardH / 7);
+        $end->x = (int)($standardW / 2);
+        $end->y = (int)($standardH / 7);
 
 
         while (true) {
@@ -71,6 +71,6 @@ class AdbDouYin extends Command
             $runTime = (microtime(true) - LARAVEL_START);
             $this->info('运行时长:' . $runTime);
         }
-        return ;
+        return;
     }
 }

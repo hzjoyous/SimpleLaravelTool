@@ -5,7 +5,7 @@ namespace App\Console\Commands\Demo;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 
-class Laravel extends Command
+class LaravelHelper extends Command
 {
     /**
      * The name and signature of the console command.

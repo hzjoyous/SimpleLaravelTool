@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands\Tool;
+namespace App\Console\Commands\Tool\QQBot;
 
 use App\Utils\QQUtil;
 use GuzzleHttp\Client;
@@ -20,7 +20,7 @@ class ZQQBotTool extends Command
      *  tag: F(rom) 来源（校外途径）
      *       - sdut
      *  tag: D(ifferent) 区别（区分重名）
-     *  tag: I(nfo) 
+     *  tag: I(nfo)
      *  tag: Z(zzz) 特殊编码
      *  tag: R(remark)  | remark is nickname no username
      */
