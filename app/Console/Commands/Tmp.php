@@ -39,6 +39,8 @@ class Tmp extends Command
     {
         $this->line(config('simple.douban.s.userId',''));;
         $this->t();
+        $arr = array_unique([]);
+        dump($arr);
         return;
     }
 
