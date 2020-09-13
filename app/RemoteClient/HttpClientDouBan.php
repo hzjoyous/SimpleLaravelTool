@@ -13,9 +13,10 @@ class HttpClientDouBan
     /**
      * @var Client $client
      */
-    protected $client;
+    protected Client $client;
 
-    protected $host = "www.douban.com";
+    protected string $host = "www.douban.com";
+    protected CookieJar $jar;
 
     public function __construct()
     {
@@ -63,6 +64,7 @@ class HttpClientDouBan
             ]
         ])->getBody();
     }
+
 
     public function getTopicListByGroupId($groupId = 586674, $start = 0): string
     {

@@ -18,7 +18,7 @@ class Pipe extends Command
      *
      * @var string
      */
-    protected $description = 'example: cat composer.json | php artisan demp:pipe';
+    protected $description = 'example: cat composer.json | php artisan demo:pipe';
 
     /**
      * Create a new command instance.

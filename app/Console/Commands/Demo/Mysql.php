@@ -41,7 +41,7 @@ class Mysql extends Command
         // 不保证可以运行
         $this->output->title('create');
         $this->info('create database simple_demo');
-        $this->info('use simple_demp');
+        $this->info('use simple_demo');
         $this->info('create');
         $this->info(' CREATE TABLE `users` (
             `id` bigint unsigned NOT NULL AUTO_INCREMENT,
