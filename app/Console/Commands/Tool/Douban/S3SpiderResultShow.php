@@ -47,7 +47,6 @@ class S3SpiderResultShow extends Command
     {
         $this->init(__DIR__ . '/config.json');
         $this->doAction();
-        // $this->del();
         return;
     }
 
@@ -78,7 +77,7 @@ class S3SpiderResultShow extends Command
 
     public function del()
     {
-        return;
+
         $client = new MongoDBClient();
         $database = $client->selectDatabase('db_simple_laravel');
         $topicContentCollection = $database->selectCollection('douban_topics');
@@ -97,6 +96,7 @@ class S3SpiderResultShow extends Command
             dump($result);
             // printf("Deleted %d document(s)\n", $result->getDeletedCount());
         }
+        return;
     }
 }
 

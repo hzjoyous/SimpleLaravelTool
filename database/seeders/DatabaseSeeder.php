@@ -13,6 +13,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        $this->call([
+            DogSeeder::class
+        ]);
         // User::factory(10)->create();
     }
 }

@@ -4,6 +4,7 @@
 namespace App\Console\Commands\Tool\Douban;
 
 
+use App\Exceptions\DouBanException;
 use App\RemoteClient\HttpClientDouBan;
 use MongoDB\Client as MongoDBClient;
 use MongoDB\Database;
@@ -47,5 +48,20 @@ trait DoubanTrait
 
         return $this;
     }
+
+    /**
+     * @param string $content
+     * @throws DouBanException
+     */
+    public function checkDouBanContent(string $content)
+    {
+        if (strpos($content, '<!DOCTYPE html>') === false) {
+            throw new DouBanException("返回非网页" . $content);
+        }
+        if (mb_strpos($content, '你访问豆瓣的方式有点像机器人程序', 0, "UTF-8") !== false) {
+            throw new DouBanException("数据返回异常");
+        }
+    }
+
 
 }
