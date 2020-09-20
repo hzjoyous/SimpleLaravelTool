@@ -98,14 +98,17 @@ class SuperS1GroupSpider extends Command
     {
         $counter = 0;
         $n = $doubanConfig->getStart();
-        if(!is_null(Cache::get("doubangroupn"))){
+
+        if (!is_null(Cache::get("doubangroupn"))) {
             $n = Cache::get("doubangroupn");
         }
+
         $insertTime = $doubanConfig->getInsertTime();
         $endNumber = $doubanConfig->getEnd();
         $retry = 0;
+
         while ($n < $endNumber) {
-            try{
+            try {
                 $cacheKey = "group:{$groupId}|n:{$n}|4";
                 $counter += 1;
                 $this->info("start:{$n}/{$endNumber},groupId:{$groupId},useTime:" . (microtime(true) - LARAVEL_START));
@@ -120,19 +123,18 @@ class SuperS1GroupSpider extends Command
                     $this->checkContent($content);
                     $this->downFile($groupIdPath . DIRECTORY_SEPARATOR . $n . '.html', $content);
                     $this->inputDB($content, $groupId, $insertTime, $n);
- //                $this->redis->set($cacheKey, true, 3600);
                     $this->info("success:{$n}/{$endNumber},groupId:{$groupId},useTime:" . (microtime(true) - LARAVEL_START));
                 }
-                Cache::put("doubangroupn",$n,3600*3);
+                Cache::put("doubangroupn", $n, 3600 * 3);
                 $retry = 0;
                 $n += 25;
                 sleep(2);
 
-            } catch (DouBanException $e){
+            } catch (DouBanException $e) {
                 throw $e;
-            } catch (\Exception $e){
-                $retry +=1;
-                if($retry>=3){
+            } catch (\Exception $e) {
+                $retry += 1;
+                if ($retry >= 3) {
                     throw $e;
                 }
             }
@@ -174,7 +176,7 @@ class SuperS1GroupSpider extends Command
             ->each(function (Crawler $node, $tdI) {
                 return $node
                     ->filter('td')
-                        ->each(function (Crawler $node, $i) use ($tdI) {
+                    ->each(function (Crawler $node, $i) use ($tdI) {
                         $result = '';
                         switch ($i) {
                             case 0:
@@ -197,7 +199,7 @@ class SuperS1GroupSpider extends Command
                                 break;
                             case 3:
                                 $lastUpdateDate = $node->text();
-                                $this->info("最后更新时间".$lastUpdateDate);
+                                $this->info("最后更新时间" . $lastUpdateDate);
                                 $result = $lastUpdateDate;
                                 break;
                             default:
@@ -208,13 +210,14 @@ class SuperS1GroupSpider extends Command
             });
 
 
-        foreach (self::$insertDataTmpArr as $item){
-            $douBanTopic =  DouBanTopic::updateOrCreate([
+        foreach (self::$insertDataTmpArr as $item) {
+            $douBanTopic = DouBanTopic::updateOrCreate([
                 'topic_id' => $item['topicId']
             ], [
                 'topic_id' => $item['topicId'],
                 'user_id' => $item['userId'],
-                'topic_title' =>$item['topicTitle'],
+                'group_id' => $groupId,
+                'topic_title' => $item['topicTitle'],
                 'topic_content' => ''
             ]);
         }

@@ -4,6 +4,7 @@ namespace App\Console\Commands\Tool;
 
 use App\Mail\UserWelcome;
 use Illuminate\Console\Command;
+use Illuminate\Mail\Message;
 use Illuminate\Support\Facades\Mail;
 
 class Email extends Command
@@ -40,9 +41,9 @@ class Email extends Command
     public function handle()
     {
         Mail::raw('easy', function ($message) {
-            $message->subject("测试的邮件主题");
+            $message->subject("异常邮件:ip更换提醒");
             // 指定发送到哪个邮箱账号
-            $message->to("31792690@qq.com");
+            $message->to(env('MAIL_USERNAME'));
         });
         if (count(Mail::failures())) {
             $this->info("失败");
@@ -51,9 +52,14 @@ class Email extends Command
         }
 
 
-        Mail::to(['1054919923@qq.com'])->send(new UserWelcome());
-
-
+//        Mail::to(['1054919923@qq.com'])->send(new UserWelcome());
+//        $to = 'hanzhijie@xiaozhu.com';
+//        Mail::send('email.email', ['data' => 'this is a test Email ! by SCORT !!!'], function ($m) use($to) {
+//            /* @var $m Message*/
+//            $m->from('1054919923@qq.com', 'name')
+//                ->to($to)
+//                ->subject('title');
+//        });
         return;
     }
 

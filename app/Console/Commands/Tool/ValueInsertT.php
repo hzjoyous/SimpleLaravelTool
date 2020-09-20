@@ -18,7 +18,7 @@ class ValueInsertT extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'this is test';
 
     /**
      * Create a new command instance.

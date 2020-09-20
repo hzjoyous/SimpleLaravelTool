@@ -10,6 +10,7 @@ class DouBanTopic extends Model
     use HasFactory;
 
     protected $user_id;
+    protected $group_id;
     protected $topic_id;
     protected $topic_title;
     protected $topic_content;
@@ -17,6 +18,7 @@ class DouBanTopic extends Model
     protected $fillable = [
         'user_id',
         'topic_id',
+        'group_id',
         'topic_title',
         'topic_content',
     ];

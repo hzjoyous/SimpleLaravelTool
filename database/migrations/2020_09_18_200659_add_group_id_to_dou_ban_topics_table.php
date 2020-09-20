@@ -4,21 +4,20 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddCommentIdToDouBanCommentsTable extends Migration
+class AddGroupIdToDouBanTopicsTable extends Migration
 {
     /**
-     * php artisan make:migration add_group_id_to_dou_ban_topics_table --table=dou_ban_topics
      * Run the migrations.
      *
      * @return void
      */
     public function up()
     {
-        Schema::table('dou_ban_comments', function (Blueprint $table) {
-            if (Schema::hasColumn('dou_ban_comments', 'comment_id')) {
+        Schema::table('dou_ban_topics', function (Blueprint $table) {
+            if (Schema::hasColumn('dou_ban_topics', 'group_id')) {
                 dump("存在无需执行");
             } else {
-                $table->bigInteger('comment_id')->default(0);
+                $table->bigInteger('group_id')->default(0);
             }
         });
     }
@@ -30,7 +29,7 @@ class AddCommentIdToDouBanCommentsTable extends Migration
      */
     public function down()
     {
-        Schema::table('dou_ban_comments', function (Blueprint $table) {
+        Schema::table('dou_ban_topics', function (Blueprint $table) {
             //
         });
     }

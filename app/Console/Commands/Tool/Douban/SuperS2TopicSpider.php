@@ -2,10 +2,14 @@
 
 namespace App\Console\Commands\Tool\Douban;
 
+use App\Exceptions\DouBanException;
 use App\Models\DouBanComment;
+use App\Models\DouBanTopic;
+use Exception;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Symfony\Component\DomCrawler\Crawler;
 
 class SuperS2TopicSpider extends Command
@@ -18,7 +22,7 @@ class SuperS2TopicSpider extends Command
      * @var string
      */
     protected $signature = 'z:sdouban:topic
-    {mode=n :运行模式,slb(构建队列),slu(使用队列)}';
+    {mode=n :运行模式,1(构建队列),2(使用队列)}';
     /**
      * The console command description.
      *
@@ -38,27 +42,37 @@ class SuperS2TopicSpider extends Command
 
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function handle()
     {
         $mode = $this->argument('mode');
 
-        $doubanConfig = new DouBanConfig(__DIR__ . '/config.json');
+        if ((int)$mode === 3) {
+            $this->info("start 发送中制命令");
+            if (Cache::put("douban:q:stop", 1)) {
+                $this->getOutput()->success("终止命令发送成功");
+            } else {
+                $this->getOutput()->warning("中制命令发送失败");
+            }
+            return;
+        }
 
         $this->init();
 
-
-        $this->sListUse();
-        return;
         switch ($mode) {
-            case 'slu':
-                $this->sListUse();
-                break;
-            case 'slb':
+            case 9:
                 $this->sListBuild();
                 break;
+            case 2:
+                Cache::pull("douban:q:stop");
+                if (!Cache::get("douban:q:stop", 0)) {
+                    $this->getOutput()->success("中断命令资格开启");
+                }
+                $this->sListUse();
+                break;
             default:
+                $this->line("未执行");
                 break;
         }
         $this->output->success('success');
@@ -66,12 +80,15 @@ class SuperS2TopicSpider extends Command
     }
 
     /**
+     * @param bool $intoRight
      * douban topic为groupPage的25倍，且数据较多，起一个队列进行分发爬取，以免爬到地老天荒
      */
-    public function sListBuild()
+    public function sListBuild($intoRight = true)
     {
-        $result = DB::select('select topic_id as topicId ,user_id as userId from dou_ban_topics');
-
+//        $result = DB::select('select topic_id as topicId ,user_id as userId from dou_ban_topics');
+//        $result = DB::select('select topic_id as topicId ,user_id as userId from dou_ban_topics where created_at > "2020-09-18"');
+        $userId = config('simple.douban.s.userId');
+        $result = DB::select('select topic_id as topicId ,user_id as userId from dou_ban_topics where userId = ?', [$userId]);
         $counter = 0;
         $waitPush = [$this->redisListKey];
         foreach ($result as $topicInfo) {
@@ -82,31 +99,47 @@ class SuperS2TopicSpider extends Command
             ]);
             $counter += 1;
             if ($counter % 5000 === 0) {
-                call_user_func_array([$this->redis, 'rPush'], $waitPush);
+                if ($intoRight) {
+                    call_user_func_array([$this->redis, 'rPush'], $waitPush);
+                } else {
+                    call_user_func_array([$this->redis, 'lPush'], $waitPush);
+                }
                 $waitPush = [$this->redisListKey];
                 $this->info('input');
             }
         }
-        call_user_func_array([$this->redis, 'rPush'], $waitPush);
-        $this->output->success("Finished inpout {$counter}");
+        if ($intoRight) {
+            call_user_func_array([$this->redis, 'rPush'], $waitPush);
+        } else {
+            call_user_func_array([$this->redis, 'lPush'], $waitPush);
+        }
+        $this->output->success("Finished inpout {$counter} ");
     }
 
     /**
-     * db.douban_topic_content.update({},{$set:{"group_id":586674}},{multi:true})
+     * @param bool $useRightInputLeftOut
+     * @throws DouBanException
      */
-    public function sListUse()
+    public function sListUse($useRightInputLeftOut = true)
     {
         $count = 0;
-        try {
-            $topicInfoStr = '';
-            while ($this->redis->lLen($this->redisListKey)) {
+        $topicInfoStr = '';
+        $retry = 0;
+        while ($this->redis->lLen($this->redisListKey)) {
+            try {
                 $count += 1;
                 $this->info("now NO.$count");
-                if ($count > 10000) {
+                if ($count > 1000) {
                     break;
                 }
-                $topicInfoStr = $this->redis->lPop($this->redisListKey);
+
+                if (Cache::get("douban:q:stop", 0)) {
+                    $this->line("接收到结束命令，结束任务");
+                    break;
+                }
+                $topicInfoStr = ($useRightInputLeftOut ? $this->redis->lPop($this->redisListKey) : $this->redis->rPop($this->redisListKey));
                 if (($lPopSuccess = $topicInfoStr) === false) {
+                    $this->line("当前队列为空，任务结束");
                     break;
                 }
                 $topicInfo = json_decode($topicInfoStr, 1);
@@ -114,14 +147,32 @@ class SuperS2TopicSpider extends Command
                 $userId = $topicInfo['userId'];
                 $groupId = $topicInfo['groupId'];
                 $this->doAction($topicId, $groupId);
+                $retry = 0;
+            } catch (DouBanException $e) {
+                if ($topicInfoStr) {
+                    $result = ($useRightInputLeftOut ? $this->redis->lPush($this->redisListKey, $topicInfoStr) : $this->redis->rPush($this->redisListKey, $topicInfoStr));
+                    $this->warn(($useRightInputLeftOut ? "使用的是右进左出" : "使用的是左进右出") . "已撤回 ：push {$topicInfoStr} end ,now list {$result}, and you need restart");
+                }
+                Mail::raw('easy', function ($message) {
+                    $message->subject("异常邮件:ip更换提醒");
+                    // 指定发送到哪个邮箱账号
+                    $message->to(env('MAIL_USERNAME'));
+                });
+                throw $e;
+            } catch (Exception $e) {
+                $retry += 1;
+                $this->warn("捕获异常，开始重试：no.$retry ");
+                $this->warn($e->getMessage());
+                if ($retry >= 3) {
+                    $this->warn("已到达最大重试次数：3,程序停止");
+                    if ($topicInfoStr) {
+                        $result = ($useRightInputLeftOut ? $this->redis->lPush($this->redisListKey, $topicInfoStr) : $this->redis->rPush($this->redisListKey, $topicInfoStr));
+                        $this->warn(($useRightInputLeftOut ? "使用的是右进左出" : "使用的是左进右出" ). "已经撤回 ： push {$topicInfoStr} end ,now list {$result}, and you need restart");
+                    }
+//                    $this->info($e->getTraceAsString());
+                    throw $e;
+                }
             }
-        } catch (\Exception $e) {
-            if ($topicInfoStr) {
-                $result = $this->redis->lPush($this->redisListKey, $topicInfoStr);
-                $this->warn("push {$topicInfoStr} end ,now list {$result}, and you need restart");
-            }
-            $this->info($e->getTraceAsString());
-            throw $e;
         }
         $this->output->success("Finished");
     }
@@ -129,24 +180,33 @@ class SuperS2TopicSpider extends Command
     /**
      * @param $topicId
      * @param $groupId
-     * @throws \App\Exceptions\DouBanException
+     * @throws DouBanException
+     * @throws Exception
      */
     protected function doAction($topicId, $groupId)
     {
-//        sleep(2);
+        sleep(2);
         $content = $this->doubanClient->getTopicByTopicId($topicId);
         $this->checkDouBanContent($content);
         $crawler = new Crawler($content);
+        $topicContent = $crawler->filter('div[class="topic-content"]')->text();
+        // 更新 topic 的 content
+        tap(DouBanTopic::where('topic_id', $topicId)->first(), function (DouBanTopic $topic) use ($topicContent) {
+            $topic->topic_content = $topicContent;
+            $topic->save();
+            return $topic;
+        });
+
         $this->useContent($content, $topicId, $groupId);
 
         if ($crawler->filter('div[class="paginator"]')->count() !== 0) {
-//            sleep(2);
+            sleep(2);
             $pageText = $crawler->filter('div[class="paginator"]')->last()->eq(0)->text();
             $page = explode(' ', $pageText);
             $pageNumber = $page[count($page) - 2];
             foreach ($this->xRange(1, $pageNumber) as $nowPageNumber) {
                 $content = $this->doubanClient->getTopicByTopicId($topicId, (string)($nowPageNumber * 100));
-                $this->useContent($content, $topicId, $groupId, $nowPageNumber);
+                $this->useContent($content, $topicId, $groupId, (string)($nowPageNumber * 100));
             }
         }
     }
@@ -190,13 +250,13 @@ class SuperS2TopicSpider extends Command
      * @param $limit
      * @param int $step
      * @return \Generator
-     * @throws \Exception
+     * @throws Exception
      */
     protected function xRange($start, $limit, $step = 1)
     {
         if ($start <= $limit) {
             if ($step <= 0) {
-                throw new \Exception('Step must be +ve');
+                throw new Exception('Step must be +ve');
             }
 
             for ($i = $start; $i <= $limit; $i += $step) {
@@ -204,7 +264,7 @@ class SuperS2TopicSpider extends Command
             }
         } else {
             if ($step >= 0) {
-                throw new \Exception('Step must be -ve');
+                throw new Exception('Step must be -ve');
             }
 
             for ($i = $start; $i >= $limit; $i += $step) {
