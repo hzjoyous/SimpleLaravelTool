@@ -1,18 +1,17 @@
 <?php
 
-namespace App\Console\Commands\Demo;
+namespace App\Console\Commands\Work;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Cache;
 
-class DemoCache extends Command
+class T extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'zdemo:cache';
+    protected $signature = 'z:t';
 
     /**
      * The console command description.
@@ -38,20 +37,11 @@ class DemoCache extends Command
      */
     public function handle()
     {
-        $value = Cache::get('key');
-        dump($value);
-        $value = Cache::get('key', null);
-        dump($value);
-
-        $result = Cache::put('keyQQ', 'value', 60);
-        dump($result);
-        $value = Cache::get('keyQQ');
-        dump($value);
-        $value = Cache::pull('keyQQ');
-        dump($value);
-        $value = Cache::pull('keyQQ');
-        dump($value);
-
+        $i = 100;
+        while ($i--) {
+            echo 1;
+            usleep(1000000);
+        }
         return 0;
     }
 }

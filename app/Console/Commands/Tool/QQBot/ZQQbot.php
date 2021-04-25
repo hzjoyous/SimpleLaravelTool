@@ -13,7 +13,7 @@ class ZQQbot extends Command
      *
      * @var string
      */
-    protected $signature = 'z:qqbot';
+    protected $signature = 'z:old:qqbot';
 
     /**
      * The console command description.

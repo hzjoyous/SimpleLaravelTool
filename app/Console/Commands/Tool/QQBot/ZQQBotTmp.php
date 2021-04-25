@@ -12,7 +12,7 @@ class ZQQBotTmp extends Command
      *
      * @var string
      */
-    protected $signature = 'z:qqbotTmp';
+    protected $signature = 'z:old:qqbotTmp';
 
 
     /**

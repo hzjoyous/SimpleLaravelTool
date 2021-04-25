@@ -28,7 +28,7 @@ class ZQQBotTool2 extends Command
      *
      * @var string
      */
-    protected $signature = 'z:qqtool2';
+    protected $signature = 'z:old:qqtool2';
 
     /**
      * The console command description.

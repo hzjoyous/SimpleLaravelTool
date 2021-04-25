@@ -1,18 +1,17 @@
 <?php
 
-namespace App\Console\Commands\Demo;
+namespace App\Console\Commands\Tool;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Cache;
 
-class DemoCache extends Command
+class xq extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'zdemo:cache';
+    protected $signature = 'z:xq';
 
     /**
      * The console command description.
@@ -38,20 +37,17 @@ class DemoCache extends Command
      */
     public function handle()
     {
-        $value = Cache::get('key');
-        dump($value);
-        $value = Cache::get('key', null);
-        dump($value);
+        $adbPath = config('simple.adbPath');
 
-        $result = Cache::put('keyQQ', 'value', 60);
-        dump($result);
-        $value = Cache::get('keyQQ');
-        dump($value);
-        $value = Cache::pull('keyQQ');
-        dump($value);
-        $value = Cache::pull('keyQQ');
-        dump($value);
+        $adbVersion = `$adbPath version`;
+        $adbScreenCap = `$adbPath shell screencap -p /sdcard/01.png`;
+        $adbPullScreenCap = `$adbPath pull `;
+        $this->info($adbVersion);
+        dump($adbScreenCap, $adbPullScreenCap);
 
+        $map = [
+          ['hCar','hHouse','hX','hS','h']
+        ];
         return 0;
     }
 }

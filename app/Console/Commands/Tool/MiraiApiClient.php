@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Console\Commands\Demo;
+namespace App\Console\Commands\Tool;
 
+use App\RemoteClient\HttpClientMiraiApi;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Cache;
 
-class DemoCache extends Command
+class MiraiApiClient extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'zdemo:cache';
+    protected $signature = 'z:qqbot';
 
     /**
      * The console command description.
@@ -31,6 +31,13 @@ class DemoCache extends Command
         parent::__construct();
     }
 
+    protected ?HttpClientMiraiApi $client = null;
+
+    public function init()
+    {
+        $this->client = new HttpClientMiraiApi();
+    }
+
     /**
      * Execute the console command.
      *
@@ -38,20 +45,12 @@ class DemoCache extends Command
      */
     public function handle()
     {
-        $value = Cache::get('key');
-        dump($value);
-        $value = Cache::get('key', null);
-        dump($value);
-
-        $result = Cache::put('keyQQ', 'value', 60);
+        $this->init();
+        $this->info($this->client->getAbout());
+        $this->client->CheckAndUpdateSessionClint('31792690');
+        $result = $this->client->sendFriendMessage('774340277', "吃饭吃饭\n吃饭吃饭\n");
         dump($result);
-        $value = Cache::get('keyQQ');
-        dump($value);
-        $value = Cache::pull('keyQQ');
-        dump($value);
-        $value = Cache::pull('keyQQ');
-        dump($value);
-
         return 0;
     }
+
 }

@@ -33,6 +33,8 @@ class Email extends Command
         parent::__construct();
     }
 
+    // todo ceshi 
+    
     /**
      * Execute the console command.
      *
@@ -50,7 +52,7 @@ class Email extends Command
         } else {
             $this->info("成功");
         }
-
+        
 
 //        Mail::to(['1054919923@qq.com'])->send(new UserWelcome());
 //        $to = 'hanzhijie@xiaozhu.com';

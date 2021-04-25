@@ -80,5 +80,6 @@ class RBAC extends Command
                 'permission_id' => 1
             ]
         ];
+        return ;
     }
 }

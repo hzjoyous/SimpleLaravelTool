@@ -153,7 +153,7 @@ class Tmp extends Command
 
 
         $userId = config('simple.douban.s.userId');
-        $userId = '195833834';
+//        $userId = '195833834';
         $this->line($userId);
         $topics = DouBanTopic::where('user_id', $userId)->get();
         $comments = DouBanComment::where('user_id', $userId)->get();

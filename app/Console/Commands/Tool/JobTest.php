@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Console\Commands\Demo;
+namespace App\Console\Commands\Tool;
 
+use App\Jobs\JobDemo;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Cache;
 
-class DemoCache extends Command
+class JobTest extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'zdemo:cache';
+    protected $signature = 'z:j';
 
     /**
      * The console command description.
@@ -38,20 +38,13 @@ class DemoCache extends Command
      */
     public function handle()
     {
-        $value = Cache::get('key');
-        dump($value);
-        $value = Cache::get('key', null);
-        dump($value);
-
-        $result = Cache::put('keyQQ', 'value', 60);
-        dump($result);
-        $value = Cache::get('keyQQ');
-        dump($value);
-        $value = Cache::pull('keyQQ');
-        dump($value);
-        $value = Cache::pull('keyQQ');
-        dump($value);
-
+        for ($i = 0; $i < 10; $i++) {
+            $data = [
+                'time' => date('Y-m-d H:i:s')
+            ];
+            dump($data);
+            JobDemo::dispatch($data);
+        }
         return 0;
     }
 }
