@@ -37,10 +37,17 @@ class CreateCouponRule extends Migration
                 ->nullable(false)
                 ->default(0)
                 ->comment('发放之后有效时间有效时间');
-            $table->dateTime('effective_date')
+            $table->dateTime('unified_expiration_time')
                 ->nullable(false)
                 ->default('2099-01-01 01:01:01')
-                ->comment('有效日期');
+                ->comment('统一有效时间，超过该日期，所有该规则下的代金券全部失效');
+            $table->unsignedTinyInteger('use_complex_expiration_rule')
+                ->nullable(false)
+                ->default(0)
+                ->comment('是否使用复杂过期规则');
+            $table->text('complex_expiration_rule')
+                ->nullable(true)
+                ->comment('复杂过期规则');
             $table->dateTime('ctime')
                 ->nullable(false)
                 ->useCurrent()

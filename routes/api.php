@@ -26,8 +26,11 @@ Route::any('/show-request', [ApiDemoController::class, 'showRequest']);
 Route::get('/cookie-look', [ApiDemoController::class, 'cookieLook']);
 Route::get('/showCode', [ApiDemoController::class, 'showCode']);
 Route::post('/upload', [ApiDemoController::class, 'uploads']);
+Route::post('/uploadFile', [ApiDemoController::class, 'uploadFile']);
+Route::post('/originalUploadFile', [ApiDemoController::class, 'originalUploadFile']);
 
 Route::prefix('/tool')->group(function () {
     Route::get('', [ToolController::class, 'index']);
     Route::get('opCacheClean', [ToolController::class, 'opCacheClean']);
 });
+

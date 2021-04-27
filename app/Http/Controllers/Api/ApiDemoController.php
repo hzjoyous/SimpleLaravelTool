@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class ApiDemoController extends Controller
 {
@@ -13,7 +14,7 @@ class ApiDemoController extends Controller
         return $this->simpleResponse('This is ApiDemo');
     }
 
-    public function showRequest(Request $request)
+    public function showRequest(Request $request): array
     {
         return $this->simpleResponse(
             $_REQUEST,
@@ -23,7 +24,7 @@ class ApiDemoController extends Controller
     }
 
 
-    public function cookieLook()
+    public function cookieLook(): array
     {
         setcookie("TestCookie", 'testCookie ' . date('Y-m-d H:i:s'));
         return $this->simpleResponse($_COOKIE);
@@ -43,8 +44,8 @@ class ApiDemoController extends Controller
     public function upload()
     {
         $allowedFileTypes = array("gif", "jpeg", "jpg", "png");
-        $temp = explode(".", $_FILES["file"]["name"]);
-        $extension = end($temp);     // 获取文件后缀名
+        $temp             = explode(".", $_FILES["file"]["name"]);
+        $extension        = end($temp);     // 获取文件后缀名
         if (
             in_array($_FILES["file"]["type"], [
                 "image/gif", "image/jpeg", "image/jpg", "image/pjpeg", "image/x-png", "image/png"
@@ -73,5 +74,60 @@ class ApiDemoController extends Controller
             ]);
         }
     }
+
+    public function originalUploadFile()
+    {
+        foreach ($_FILES as $file){
+            if (in_array($file["type"]??'', [
+                "text/csv"
+            ])) {
+                if ($file["error"]??'' > 0) {
+                    return response([
+                        "错误：: " . $_FILES["file"]["error"]
+                    ]);
+                } else {
+                    is_dir(storage_path('upload')) || mkdir(storage_path('upload'));
+                    $newFilePath =  storage_path("upload") . DIRECTORY_SEPARATOR . date('YMDhis') . $file["name"];
+                    move_uploaded_file($file["tmp_name"],$newFilePath);
+                    if (($handle = fopen($newFilePath, "r")) !== FALSE) {
+                        fgetcsv($handle, 1000, ",");
+                        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                            dump($data);
+                        }
+                    }
+                }
+            }
+        }
+
+        return  1;
+
+    }
+
+    public function uploadFile(Request $request)
+    {
+        $files = $request->files;
+
+        foreach ($files as $file) {
+            /* @var $file UploadedFile */
+            //$tmpFilePath = $file->getPath(). DIRECTORY_SEPARATOR.$file->getFilename();
+            dump($file);
+            $fileName = $file->getFilename();
+
+            //$extension = $file->getClientOriginalExtension();
+            //$newFileName  = md5(time() . rand(1, 1000)) . '.' . $extension;
+            $fileDir  = storage_path('tmp' . DIRECTORY_SEPARATOR);
+            $filePath = $fileDir . $fileName;
+            $file->move($fileDir, $fileName);
+
+            if (($handle = fopen($filePath, "r")) !== FALSE) {
+                fgetcsv($handle, 1000, ",");
+                while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                    dump($data);
+                }
+            }
+        }
+    }
+
+
 }
 

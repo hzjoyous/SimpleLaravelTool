@@ -17,12 +17,14 @@ class KMClient
     protected string $host = "localhost";
     protected CookieJar $jar;
 
+    const COOKIE_FILE_NAME = 'a.kmclient.cookie.txt';
+
     public function __construct()
     {
         $base_uri = 'http://keying-admin-dev.2345.com:3000';
         // 文件读取Cookie
-        if (is_file(__DIR__ . DIRECTORY_SEPARATOR . 'kclint.txt')) {
-            $cookieStr = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'kclint.txt');
+        if (is_file(__DIR__ . DIRECTORY_SEPARATOR . self::COOKIE_FILE_NAME)) {
+            $cookieStr = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . self::COOKIE_FILE_NAME);
         } else {
             $cookieStr = "";
         }
@@ -60,7 +62,7 @@ class KMClient
             $cookieArr[$value['Name']] = $value['Value'];
         }
         $cookieStr = (string)(new SetCookie($cookieArr));
-        file_put_contents(__DIR__ . DIRECTORY_SEPARATOR . '2345.txt', $cookieStr);
+        file_put_contents(__DIR__ . DIRECTORY_SEPARATOR . self::COOKIE_FILE_NAME, $cookieStr);
     }
 
     public function getCommonParams(): array

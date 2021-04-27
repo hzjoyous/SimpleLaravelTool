@@ -14,11 +14,11 @@ use App\Http\Controllers\Web\WebDemoController;
 |
 */
 
-//Route::get('/', function () {
-//    return view('welcome');
-//});
+Route::get('/', function () {
+    return view('welcome');
+});
 
-Route::get('/', \App\Http\Controllers\Controller::class.'@index');
+//Route::get('/', \App\Http\Controllers\Controller::class.'@index');
 
 Route::any('/phpinfo', fn() => phpinfo());
 

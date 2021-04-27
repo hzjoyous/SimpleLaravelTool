@@ -2,9 +2,7 @@
 
 namespace App\Console\Commands\Work;
 
-use App\I\Index;
-use App\RemoteClient\KClient;
-use App\RemoteClient\KMClient;
+use App\Service\Work;
 use Illuminate\Console\Command;
 
 class zk extends Command
@@ -41,7 +39,7 @@ class zk extends Command
      */
     public function handle()
     {
-        (new Index())->index();
+        (new Work())->index();
         return 0;
     }
 

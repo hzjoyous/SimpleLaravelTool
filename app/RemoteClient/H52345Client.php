@@ -17,11 +17,13 @@ class H52345Client
     protected string $host = "localhost";
     protected CookieJar $jar;
 
+    const COOKIE_FILE_NAME = 'a.h5.2345.cookie.txt';
+
     public function __construct()
     {
         // 文件读取Cookie
-        if (is_file(__DIR__ . DIRECTORY_SEPARATOR . 'kclint.txt')) {
-            $cookieStr = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'kclint.txt');
+        if (is_file(__DIR__ . DIRECTORY_SEPARATOR . self::COOKIE_FILE_NAME)) {
+            $cookieStr = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . self::COOKIE_FILE_NAME);
         } else {
             $cookieStr = "";
         }
@@ -55,7 +57,7 @@ class H52345Client
             $cookieArr[$value['Name']] = $value['Value'];
         }
         $cookieStr = (string)(new SetCookie($cookieArr));
-        file_put_contents(__DIR__ . DIRECTORY_SEPARATOR . '2345.txt', $cookieStr);
+        file_put_contents(__DIR__ . DIRECTORY_SEPARATOR . self::COOKIE_FILE_NAME, $cookieStr);
     }
 
     protected function getCommonParams(): array
@@ -102,7 +104,7 @@ class H52345Client
 
         $body = (string)$response->getBody();
 
-        echo($body).PHP_EOL;
+        echo ($body) . PHP_EOL;
 
         return json_decode($body, true);
     }
@@ -129,13 +131,12 @@ class H52345Client
     {
 
         $extraParams = [
-            'videoIds'=>[
-                "1","2"
+            'videoIds' => [
+                "1", "2"
             ]
         ];
         return $this->kPost('/app/userVideo/check', $extraParams);
     }
-
 
 
     public function commonConfig()
@@ -153,7 +154,6 @@ class H52345Client
         ];
         return $this->kPost('/app/channel/list', $extraParams);
     }
-
 
 
 }
