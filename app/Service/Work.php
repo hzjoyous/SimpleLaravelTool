@@ -38,7 +38,12 @@ class Work
         dump('commonConfig');
         $result = $this->kClient->commonConfig();
         dump($result);
-        dd();
+
+        $result = $this->kmClient->appConfigList('full_screen_video');
+        dump($result);
+
+
+//        dd();
 //        dump('list');
 //        $result = $this->kmClient->appConfigSave('template_command');
 //        dump($result);
@@ -86,18 +91,18 @@ class Work
             $configType
         ) {
 
-            dump($configType);
-            dump($configType . 'save');
-            $result = $this->kmClient->appConfigSave($configType);
-            dump($result);
+//            dump($configType);
+//            dump($configType . 'save');
+//            $result = $this->kmClient->appConfigSave($configType);
+//            dump($result);
 
             dump($configType . ':list');
             $result = $this->kmClient->appConfigList($configType);
             dump($result);
 
-            dump($configType . "Release");
-            $result = $this->kmClient->appConfigRelease($configType);
-            dump($result);
+//            dump($configType . "Release");
+//            $result = $this->kmClient->appConfigRelease($configType);
+//            dump($result);
         }
     }
 }
