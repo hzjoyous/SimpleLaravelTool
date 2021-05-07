@@ -24,6 +24,7 @@
         "laravel/tinker": "^2.0",
         "league/csv": "^9.6",
         "mongodb/mongodb": "^1.6",
+        "phpoffice/phpspreadsheet": "^1.17",
         "react/event-loop": "^1.1.1",
         "react/filesystem": "^0.1.2",
         "symfony/css-selector": "^5.0",
