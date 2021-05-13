@@ -40,7 +40,7 @@ class Work
         dump($result);
 
         $result = $this->kmClient->appConfigList('full_screen_video');
-        dump($result);
+        dd($result);
 
 
 //        dd();

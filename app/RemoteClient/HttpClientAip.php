@@ -16,7 +16,6 @@ class HttpClientAip
     public function __construct()
     {
         $this->client = new Client([
-
             'base_uri' => 'https://aip.baidubce.com',
             'timeout' => 10.0,
             'http_errors' => false,

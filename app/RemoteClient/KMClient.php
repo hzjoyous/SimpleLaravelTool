@@ -12,35 +12,37 @@ use GuzzleHttp\RequestOptions;
 class KMClient
 {
 
+    use CookieUtil;
+
     protected Client $client;
-
     protected string $host = "localhost";
-    protected CookieJar $jar;
+    protected string $domain = 'localhost';
+    protected string $baseUri = 'http://localhost';
+    protected string $prefixPath = '';
 
-    const COOKIE_FILE_NAME = 'a.kmclient.cookie.txt';
+    protected function init()
+    {
+
+//        $this->baseUri    = 'http://keying-admin-dev.2345.com:3000';
+//        $this->prefixPath = '';
+
+        $this->baseUri    = 'http://localhost:3000';
+        $this->prefixPath = '/keying-admin';
+
+    }
+
 
     public function __construct()
     {
-        $base_uri = 'http://keying-admin-dev.2345.com:3000';
-        // 文件读取Cookie
-        if (is_file(__DIR__ . DIRECTORY_SEPARATOR . self::COOKIE_FILE_NAME)) {
-            $cookieStr = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . self::COOKIE_FILE_NAME);
-        } else {
-            $cookieStr = "";
-        }
-        $cookieArr = SetCookie::fromString($cookieStr)->toArray();
-        $this->jar = CookieJar::fromArray(
-            $cookieArr,
-            'www.2345.com'
-        );
-        $proxy     = "127.0.0.1:11000";
+        $this->init();
+        $proxy = "127.0.0.1:11000";
         // http header 不区分大小写
         $this->client = new Client([
-            'base_uri'    => $base_uri,
+            'base_uri'    => $this->baseUri,
             'timeout'     => 10.0,
             'http_errors' => false,
             'verify'      => false,
-            'cookies'     => $this->jar,
+            'cookies'     => $this->getCookieFromDomain($this->domain),
             //            'proxy' => "127.0.0.1:11000",
             //            'proxy' => $proxy,
             'headers'     => [
@@ -53,16 +55,9 @@ class KMClient
         ]);
     }
 
-
     public function __destruct()
     {
-        $arr       = $this->jar->toArray();
-        $cookieArr = [];
-        foreach ($arr as $value) {
-            $cookieArr[$value['Name']] = $value['Value'];
-        }
-        $cookieStr = (string)(new SetCookie($cookieArr));
-        file_put_contents(__DIR__ . DIRECTORY_SEPARATOR . self::COOKIE_FILE_NAME, $cookieStr);
+        $this->saveCookie();
     }
 
     public function getCommonParams(): array
@@ -95,7 +90,7 @@ class KMClient
 
     public function kmQueryPost(string $uri, array $query)
     {
-        $response = $this->client->request('POST', $uri, [
+        $response = $this->client->request('POST', $this->prefixPath . $uri, [
             RequestOptions::QUERY => $query
         ]);
 
@@ -108,7 +103,7 @@ class KMClient
 
     public function kmQueryGet(string $uri, array $query)
     {
-        $response = $this->client->request('GET', $uri, [
+        $response = $this->client->request('GET', $this->prefixPath . $uri, [
             RequestOptions::QUERY => $query
         ]);
 
@@ -258,8 +253,8 @@ class KMClient
         $query = [
             "configTypeList" => [
                 $configType
-//                'template_recommend',
-//                'template_recommend_for_new_user',
+                //                'template_recommend',
+                //                'template_recommend_for_new_user',
             ],
         ];
         return $this->kmQueryPost('/admin/commonConfig/appConfig/release', $query);

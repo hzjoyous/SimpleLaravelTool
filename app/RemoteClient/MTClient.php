@@ -13,31 +13,19 @@ use GuzzleHttp\RequestOptions;
 class MTClient
 {
 
+    use CookieUtil;
     protected Client $client;
     protected string $host = "localhost";
-    protected CookieJar $jar;
-    const COOKIE_FILE_NAME = 'a.m.cookie.txt';
 
     public function __construct()
     {
-        // 文件读取Cookie
-        if (is_file(__DIR__ . DIRECTORY_SEPARATOR . self::COOKIE_FILE_NAME)) {
-            $cookieStr = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . self::COOKIE_FILE_NAME);
-        } else {
-            $cookieStr = "";
-        }
-        $cookieArr    = SetCookie::fromString($cookieStr)->toArray();
-        $this->jar    = CookieJar::fromArray(
-            $cookieArr,
-            'http://localhost:8080'
-        );
         $base_uri     = 'http://localhost:8080';
         $this->client = new Client([
             'base_uri'    => $base_uri,
             'timeout'     => 10.0,
             'http_errors' => false,
             'verify'      => false,
-            'cookies'     => $this->jar,
+            'cookies'     => $this->getCookieFromDomain('localhost'),
             'headers'     => [
                 'User-Agent'   => 'User-Agent:Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_8; en-us) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50',
                 "Connection"   => "keep-alive",
@@ -49,13 +37,7 @@ class MTClient
 
     public function __destruct()
     {
-        $arr       = $this->jar->toArray();
-        $cookieArr = [];
-        foreach ($arr as $value) {
-            $cookieArr[$value['Name']] = $value['Value'];
-        }
-        $cookieStr = (string)(new SetCookie($cookieArr));
-        file_put_contents(__DIR__ . DIRECTORY_SEPARATOR . self::COOKIE_FILE_NAME, $cookieStr);
+        $this->saveCookie();
     }
 
 

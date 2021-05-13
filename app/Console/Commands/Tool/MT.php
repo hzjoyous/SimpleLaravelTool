@@ -42,8 +42,8 @@ class MT extends Command
         $client->reg();
         $result = $client->login();
         $result = json_decode($result,true);
-        $token = $result['token'];
-         $client->aApiNeedJwt($token);
+//        $token = $result['token'];
+//         $client->aApiNeedJwt($token);
         return 0;
     }
 }

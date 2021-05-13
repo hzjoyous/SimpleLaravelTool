@@ -12,12 +12,12 @@ class HttpClientMiraiApi
     /**
      * @var Client $client
      */
-    protected $client;
+    protected Client $client;
 
     /**
      * @var string
      */
-    private $sessionKey;
+    private string $sessionKey;
 
     public function __construct()
     {

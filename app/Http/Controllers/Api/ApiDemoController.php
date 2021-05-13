@@ -19,7 +19,7 @@ class ApiDemoController extends Controller
         return $this->simpleResponse(
             $_REQUEST,
             $_SERVER,
-            $requestArr = (array)json_decode($request->getContent(), true)
+            (array)json_decode($request->getContent(), true)
         );
     }
 

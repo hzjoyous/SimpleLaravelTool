@@ -7,7 +7,7 @@ class QQUtil
 {
     public static function usernameEncode(array $friendList): array
     {
-        $friendList = array_reduce($friendList, function ($pre, $item) {
+        return array_reduce($friendList, function ($pre, $item) {
             $userInfo = explode('#', $item['remark']);
             $tVar = 0;
             $userInfo = array_reduce($userInfo, function ($pre, $item) use (&$tVar) {
@@ -63,8 +63,6 @@ class QQUtil
             $pre[] = $item;
             return $pre;
         }, []);
-
-        return $friendList;
     }
 }
 

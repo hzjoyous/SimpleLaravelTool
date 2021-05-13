@@ -13,31 +13,35 @@ use GuzzleHttp\RequestOptions;
 class KClient
 {
 
+    use CookieUtil;
+
     protected Client $client;
     protected string $host = "localhost";
-    protected CookieJar $jar;
+
+    protected string $domain = 'localhost';
+    protected string $baseUri = 'http://localhost';
+    protected string $prefixPath = '';
+
+    protected function init()
+    {
+
+//        $this->baseUri    = 'http://keying-api-dev.2345.com:3000';
+//        $this->prefixPath = '';
+
+        $this->baseUri    = 'http://localhost:3000';
+        $this->prefixPath = '/keying-api';
+
+    }
 
     public function __construct()
     {
-        $base_uri = 'http://keying-api-dev.2345.com:3000';
-
-        // 文件读取Cookie
-        if (is_file(__DIR__ . DIRECTORY_SEPARATOR . 'kclint.txt')) {
-            $cookieStr = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'kclint.txt');
-        } else {
-            $cookieStr = "";
-        }
-        $cookieArr    = SetCookie::fromString($cookieStr)->toArray();
-        $this->jar    = CookieJar::fromArray(
-            $cookieArr,
-            'www.2345.com'
-        );
+        $this->init();
         $this->client = new Client([
-            'base_uri'    => $base_uri,
+            'base_uri'    => $this->baseUri,
             'timeout'     => 10.0,
             'http_errors' => false,
             'verify'      => false,
-            'cookies'     => $this->jar,
+            'cookies'     => $this->getCookieFromDomain($this->domain),
             //            'proxy' => "127.0.0.1:11000",
             //            'proxy' => $proxy,
             'headers'     => [
@@ -51,13 +55,7 @@ class KClient
 
     public function __destruct()
     {
-        $arr       = $this->jar->toArray();
-        $cookieArr = [];
-        foreach ($arr as $value) {
-            $cookieArr[$value['Name']] = $value['Value'];
-        }
-        $cookieStr = (string)(new SetCookie($cookieArr));
-        file_put_contents(__DIR__ . DIRECTORY_SEPARATOR . '2345.txt', $cookieStr);
+        $this->saveCookie();
     }
 
     protected function getCommonParams(): array
@@ -96,7 +94,7 @@ class KClient
             'extraParams'  => $extraParams,
             'commonParams' => $this->getCommonParams()
         ];
-        $response = $this->client->request('POST', $uri, [
+        $response = $this->client->request('POST', $this->prefixPath . $uri, [
             RequestOptions::FORM_PARAMS => [
                 'data' => json_encode($data)
             ]
@@ -104,7 +102,7 @@ class KClient
 
         $body = (string)$response->getBody();
 
-        echo($body).PHP_EOL;
+        echo ($body) . PHP_EOL;
 
         return json_decode($body, true);
     }
@@ -131,13 +129,12 @@ class KClient
     {
 
         $extraParams = [
-            'videoIds'=>[
-                "1","2"
+            'videoIds' => [
+                "1", "2"
             ]
         ];
         return $this->kPost('/app/userVideo/check', $extraParams);
     }
-
 
 
     public function commonConfig()
@@ -155,7 +152,6 @@ class KClient
         ];
         return $this->kPost('/app/channel/list', $extraParams);
     }
-
 
 
 }

@@ -50,7 +50,8 @@ class StrMake extends Command
             $startM = '0'.$startM;
         }
         $startTime = strtotime(date("Y-{$startM}-01"));
-        for($i = 0 ;$i<31;$i++){
+//        $startTime = strtotime(date('2021-01-15'));
+        for($i = 0 ;$i<150;$i++){
             if(date('m',($startTime+86400*$i)) == 5){
                 break;
             }
