@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cc044c1a2d7d948d5c441e1f32b866e9",
+    "content-hash": "0258d586ec754a7fa79df226df9d1983",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -7490,6 +7490,50 @@
                 "source": "https://github.com/tivie/php-os-detector/tree/master"
             },
             "time": "2017-10-21T03:33:59+00:00"
+        },
+        {
+            "name": "tth/read-as-arr",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thousand-hands/ReadAsArr.git",
+                "reference": "c7a45aaa0d68757f96d2756fe7ddcd607c7a55c8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thousand-hands/ReadAsArr/zipball/c7a45aaa0d68757f96d2756fe7ddcd607c7a55c8",
+                "reference": "c7a45aaa0d68757f96d2756fe7ddcd607c7a55c8",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ReadAsArr\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "thh",
+                    "email": "hzjmessage@outlook.com"
+                }
+            ],
+            "description": "RAR is a php library that can read file as array for you.",
+            "keywords": [
+                "generators",
+                "library"
+            ],
+            "support": {
+                "issues": "https://github.com/thousand-hands/ReadAsArr/issues",
+                "source": "https://github.com/thousand-hands/ReadAsArr/tree/1.0.0"
+            },
+            "time": "2021-05-17T02:03:07+00:00"
         },
         {
             "name": "vlucas/phpdotenv",

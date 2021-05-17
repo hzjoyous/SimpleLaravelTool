@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\WebDemoController;
+use App\Http\Controllers\Controller;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,7 +19,7 @@ use App\Http\Controllers\Web\WebDemoController;
 //     return view('welcome');
 // });
 
-Route::get('/', \App\Http\Controllers\Controller::class.'@index');
+Route::get('/', Controller::class.'@index');
 
 Route::any('/phpinfo', fn() => phpinfo());
 

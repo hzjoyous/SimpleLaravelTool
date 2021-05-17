@@ -29,7 +29,8 @@
         "react/filesystem": "^0.1.2",
         "symfony/css-selector": "^5.0",
         "symfony/dom-crawler": "^5.0",
-        "symfony/yaml": "^5.2"
+        "symfony/yaml": "^5.2",
+        "tth/read-as-arr": "^1.0"
     },
     "require-dev": {
         "facade/ignition": "^2.3.6",
