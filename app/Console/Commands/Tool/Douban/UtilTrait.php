@@ -11,18 +11,19 @@ use Generator;
 use MongoDB\Client as MongoDBClient;
 use MongoDB\Database;
 use \Redis;
+use Illuminate\Support\Facades\Redis as FRedis;
 
-trait DoubanTrait
+trait UtilTrait
 {
-    private MongoDBClient $mongoDBClient;
-    private Database $mongoDBDatabase;
+    private MongoDBClient    $mongoDBClient;
+    private Database         $mongoDBDatabase;
     private HttpClientDouBan $doubanClient;
-    private Redis $redis;
-    private string $redisHost = '127.0.0.1';
-    private int $redisPort = 6379;
-    private string $redisPassWord = '';
-    private string $redisListKey = 'douban:topic:list';
-    private DouBanConfig $doubanConfig;
+    private Redis            $redis;
+    private string           $redisHost     = '127.0.0.1';
+    private int              $redisPort     = 6379;
+    private string           $redisPassWord = '';
+    private string $redisListKey  = 'douban:topic:list';
+    private Config $doubanConfig;
     private string $doubanPath;
 
     protected function getRedis(): Redis
@@ -35,7 +36,7 @@ trait DoubanTrait
         return $this->mongoDBClient;
     }
 
-    protected function getDoubanPath():string
+    protected function getDoubanPath(): string
     {
         return $this->doubanPath;
     }
@@ -47,12 +48,13 @@ trait DoubanTrait
      */
     public function init(string $configFilePath = __DIR__ . '/config.json'): static
     {
-        $this->doubanConfig = new DouBanConfig($configFilePath);
+        $this->doubanConfig = new Config($configFilePath);
+        $this->redis = FRedis::connection()->client();
 
-        $this->redis = new Redis();
-        $this->redis->connect($this->redisHost, $this->redisPort);
-        $this->redis->setOption(Redis::OPT_READ_TIMEOUT, -1);
-        $this->redisPassWord && $this->redis->auth($this->redisPassWord);
+//        $this->redis = new Redis();
+//        $this->redis->connect($this->redisHost, $this->redisPort);
+//        $this->redis->setOption(Redis::OPT_READ_TIMEOUT, -1);
+//        $this->redisPassWord && $this->redis->auth($this->redisPassWord);
 
         $this->doubanClient = new HttpClientDouBan();
 
@@ -72,6 +74,7 @@ trait DoubanTrait
      */
     public function checkDouBanContent(string $content)
     {
+        //strpos($content, '<!DOCTYPE html>') === false
         if (!str_contains($content, '<!DOCTYPE html>')) {
             throw new DouBanException("返回非网页" . $content);
         }
@@ -106,6 +109,11 @@ trait DoubanTrait
                 yield $i;
             }
         }
+    }
+
+    protected function getGroupUrl($groupId, $n): string
+    {
+        return "https://www.douban.com/group/$groupId/discussion?start={$n}";
     }
 
 }

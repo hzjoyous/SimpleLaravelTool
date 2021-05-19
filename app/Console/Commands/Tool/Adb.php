@@ -37,7 +37,7 @@ class Adb extends Command
      */
     public function handle()
     {
-        $adbPath = config('simple.adbPath');
+        $adbPath = (string)config('simple.adbPath');
 
         $adbVersion = `$adbPath version`;
         $adbScreenCap = `$adbPath shell screencap -p /sdcard/01.png`;

@@ -18,7 +18,8 @@ class AddCommentIdToDouBanCommentsTable extends Migration
             if (Schema::hasColumn('dou_ban_comments', 'comment_id')) {
                 dump("存在无需执行");
             } else {
-                $table->bigInteger('comment_id')->default(0);
+                $table->string('comment_id')->default(0);
+                $table->index('comment_id','index_comment_id');
             }
         });
     }

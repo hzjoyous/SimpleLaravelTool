@@ -9,12 +9,6 @@ class DouBanTopic extends Model
 {
     use HasFactory;
 
-    protected $user_id;
-    protected $group_id;
-    protected $topic_id;
-    protected $topic_title;
-    protected $topic_content;
-
     protected $fillable = [
         'user_id',
         'topic_id',
@@ -24,4 +18,10 @@ class DouBanTopic extends Model
     ];
 
     protected $guarded = [];
+
+    public static function getByLaterThanCreateTime($createTime): \Illuminate\Database\Eloquent\Collection|array
+    {
+        return self::query()->where('created_at','>',$createTime)->get();
+    }
+
 }

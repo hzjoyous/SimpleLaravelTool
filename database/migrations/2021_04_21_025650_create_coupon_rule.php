@@ -14,8 +14,8 @@ class CreateCouponRule extends Migration
     public function up()
     {
         Schema::create('yxzx_coupon_rule', function (Blueprint $table) {
-            $table->charset = 'gbk';
-            $table->collation = 'gbk_chinese_ci';
+//            $table->charset = 'gbk';
+//            $table->collation = 'gbk_chinese_ci';
             $table->bigIncrements('id');
             $table->string('name', 64)
                 ->nullable(false)

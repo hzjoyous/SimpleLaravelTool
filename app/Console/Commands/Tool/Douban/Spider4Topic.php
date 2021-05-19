@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Symfony\Component\DomCrawler\Crawler;
 
-class SuperS2TopicSpider extends Command
+class Spider4Topic extends Command
 {
     use UtilTrait;
 
@@ -85,17 +85,16 @@ class SuperS2TopicSpider extends Command
      */
     public function sListBuild(bool $intoRight = true)
     {
-//        $result = DB::select('select topic_id as topicId ,user_id as userId from dou_ban_topics');
-        $result = DB::select('select topic_id as topicId ,user_id as userId from dou_ban_topics where created_at > "2020-09-18"');
-//        $userId   = config('simple.douban.s.userId');
-//        $result   = DB::select('select topic_id as topicId ,user_id as userId from dou_ban_topics where user_id = ?', [$userId]);
+        $result = DouBanTopic::getByLaterThanCreateTime("2020-09-18");
+//        $result = DouBanTopic::all();
+
         $counter  = 0;
         $waitPush = [$this->redisListKey];
         foreach ($result as $topicInfo) {
             $waitPush[] = json_encode([
-                'topicId' => $topicInfo->topicId,
-                'userId'  => $topicInfo->userId,
-                'groupId' => '593151',
+                'topicId' => $topicInfo->topic_id,
+                'userId'  => $topicInfo->user_id,
+                'groupId' => $topicInfo->group_id,
             ]);
             $counter    += 1;
             if ($counter % 5000 === 0) {
@@ -113,7 +112,7 @@ class SuperS2TopicSpider extends Command
         } else {
             call_user_func_array([$this->redis, 'lPush'], $waitPush);
         }
-        $this->output->success("Finished inpout {$counter} ");
+        $this->output->success("Finished input {$counter} ");
     }
 
     /**

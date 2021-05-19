@@ -44,6 +44,7 @@ class JobTest extends Command
             ];
             dump($data);
             JobDemo::dispatch($data);
+            sleep(1);
         }
         return 0;
     }

@@ -17,7 +17,8 @@ class AddGroupIdToDouBanTopicsTable extends Migration
             if (Schema::hasColumn('dou_ban_topics', 'group_id')) {
                 dump("存在无需执行");
             } else {
-                $table->bigInteger('group_id')->default(0);
+                $table->string('group_id')->default(0);
+                $table->index('group_id','index_group_id');
             }
         });
     }

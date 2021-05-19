@@ -15,7 +15,7 @@ class CreateDouBanUsersTable extends Migration
     {
         Schema::create('dou_ban_users', function (Blueprint $table) {
             $table->id();
-            $table->string('nickname');
+            $table->string('nickname')->nullable(false)->default('nickname');
             $table->timestamps();
         });
     }

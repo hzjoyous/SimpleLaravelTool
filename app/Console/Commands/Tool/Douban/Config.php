@@ -4,13 +4,13 @@ namespace App\Console\Commands\Tool\Douban;
 
 use Illuminate\Support\Facades\Cache;
 
-class DouBanConfig
+class Config
 {
     private string $groupId;
-    private $start;
-    private $end;
-    private $insertTime;
-    private $groupList;
+    private mixed $start;
+    private mixed $end;
+    private mixed $insertTime;
+    private mixed $groupList;
 
     public function __construct($configFilePath)
     {
@@ -34,7 +34,7 @@ class DouBanConfig
         $this->groupList = $config['groupList'];
     }
 
-    public function getGroupId()
+    public function getGroupId(): string
     {
         return $this->groupId;
     }

@@ -14,8 +14,8 @@ class CreateCoupon extends Migration
     public function up()
     {
         Schema::create('yxzx_coupon', function (Blueprint $table) {
-            $table->charset = 'gbk';
-            $table->collation = 'gbk_chinese_ci';
+//            $table->charset = 'gbk';
+//            $table->collation = 'gbk_chinese_ci';
             $table->bigIncrements('id');
             $table->bigInteger('passid')
                 ->default(0)

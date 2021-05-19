@@ -34,16 +34,15 @@ class CronTab extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return int
      */
-    public function handle()
+    public function handle(): int
     {
-
         $start = microtime(true);
         sleep(5);
         $end   = microtime(true);
         Log::debug("cron1 startTime is {$start} and use " . ($end - $start));
-        return;
+        return 1;
 
     }
 }
