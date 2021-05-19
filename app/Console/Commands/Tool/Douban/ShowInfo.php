@@ -4,6 +4,7 @@ namespace App\Console\Commands\Tool\Douban;
 
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 
 class ShowInfo extends Command
 {
@@ -41,8 +42,9 @@ class ShowInfo extends Command
      */
     public function handle(): int
     {
-        $this->init();
-        dump($this->redis->lLen($this->redisListKey));
+        Cache::flush();
+//        $this->init();
+//        dump($this->redis->lLen($this->redisListKey));
         return 0;
     }
 }

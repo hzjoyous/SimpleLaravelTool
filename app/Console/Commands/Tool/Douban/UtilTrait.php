@@ -22,9 +22,9 @@ trait UtilTrait
     private string           $redisHost     = '127.0.0.1';
     private int              $redisPort     = 6379;
     private string           $redisPassWord = '';
-    private string $redisListKey  = 'douban:topic:list';
-    private Config $doubanConfig;
-    private string $doubanPath;
+    private string           $redisListKey  = 'douban:topic:list';
+    private Config           $doubanConfig;
+    private string           $doubanPath;
 
     protected function getRedis(): Redis
     {
@@ -49,7 +49,7 @@ trait UtilTrait
     public function init(string $configFilePath = __DIR__ . '/config.json'): static
     {
         $this->doubanConfig = new Config($configFilePath);
-        $this->redis = FRedis::connection()->client();
+        $this->redis        = FRedis::connection()->client();
 
 //        $this->redis = new Redis();
 //        $this->redis->connect($this->redisHost, $this->redisPort);
