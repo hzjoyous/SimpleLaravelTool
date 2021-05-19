@@ -2,13 +2,17 @@
 
 namespace App\Console\Commands\Tool\Douban;
 
+use App\Exceptions\DouBanException;
+use App\Models\DouBanTopic;
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 use Symfony\Component\DomCrawler\Crawler;
 
-class S1GroupSpider extends Command
+class SuperS1GroupSpider extends Command
 {
-    use DoubanTrait;
+    use UtilTrait;
+
     /**
      * php artisan z:douban:group
      *
@@ -16,7 +20,7 @@ class S1GroupSpider extends Command
      *
      * @var string
      */
-    protected $signature = 'z:douban:group';
+    protected $signature = 'z:sdouban:group';
 
     /**
      * The console command description.
@@ -59,7 +63,7 @@ class S1GroupSpider extends Command
         return;
     }
 
-    protected function runner($groupId, DouBanConfig $doubanConfig)
+    protected function runner($groupId, DouBanConfig $config)
     {
         $this->info("当前groupId" . $groupId);
         $doubanPath = storage_path('tmp' . DIRECTORY_SEPARATOR . 'douban');
@@ -71,7 +75,7 @@ class S1GroupSpider extends Command
         is_dir($groupIdPath) || mkdir($groupIdPath, 0777, true);
 
         try {
-            $this->s($groupIdPath, $groupId, $doubanConfig);
+            $this->s($groupIdPath, $groupId, $config);
         } catch (Exception $e) {
             if ($e->getCode() === self::CONTINUE_S) {
                 $this->warn($e->getMessage());
@@ -83,54 +87,57 @@ class S1GroupSpider extends Command
         $this->output->success("groupId {$groupId} success");
     }
 
-
+    const KEY_PAGE_N  = "key:page:n";
     /**
      * @param $groupIdPath
      * @param $groupId
-     * @param DouBanConfig $doubanConfig
+     * @param DouBanConfig $config
      * @throws Exception
      */
-    public function s($groupIdPath, $groupId, DouBanConfig $doubanConfig)
+    public function s($groupIdPath, $groupId, DouBanConfig $config)
     {
         $counter = 0;
-        $n = $doubanConfig->getStart();
-        $insertTime = $doubanConfig->getInsertTime();
-        $endNumber = $doubanConfig->getEnd();
+        $n = $config->getStart();
+
+        if (!is_null(Cache::get(self::KEY_PAGE_N))) {
+            $n = Cache::get(self::KEY_PAGE_N);
+        }
+
+        $insertTime = $config->getInsertTime();
+        $endNumber = $config->getEnd();
+        $retry = 0;
 
         while ($n < $endNumber) {
-            $cacheKey = "group:{$groupId}|n:{$n}|4";
-            $counter += 1;
-            $this->info("start:{$n}/{$endNumber},groupId:{$groupId},useTime:" . (microtime(true) - LARAVEL_START));
+            try {
+                $cacheKey = "group:{$groupId}|n:{$n}|4";
+                $counter += 1;
+                $this->info("start:{$n}/{$endNumber},groupId:{$groupId},useTime:" . (microtime(true) - LARAVEL_START));
 
-            if ($isDown = $this->redis->get($cacheKey)) {
-                $content = file_get_contents($groupIdPath . DIRECTORY_SEPARATOR . $n . '.html');
-                $this->checkContent($content);
-                $this->info("已抓取->$isDown 不进行操作");
-            } else {
-                $this->info("https://www.douban.com/group/$groupId/discussion?start={$n}");
-                $content = $this->doubanClient->getTopicListByGroupId($groupId, $n);
-                $this->checkContent($content);
-                $this->downFile($groupIdPath . DIRECTORY_SEPARATOR . $n . '.html', $content);
-                $this->inputDB($content, $groupId, $insertTime, $n);
-                $this->redis->set($cacheKey, true, 3600);
-                $this->info("success:{$n}/{$endNumber},groupId:{$groupId},useTime:" . (microtime(true) - LARAVEL_START));
+                if ($isDown = $this->redis->get($cacheKey)) {
+                    $content = file_get_contents($groupIdPath . DIRECTORY_SEPARATOR . $n . '.html');
+                    $this->checkDouBanContent($content);
+                    $this->info("已抓取->$isDown 不进行操作");
+                } else {
+                    $this->info($this->getGroupUrl($groupId,$n));
+                    $content = $this->doubanClient->getTopicListByGroupId($groupId, $n);
+                    $this->checkDouBanContent($content);
+                    $this->downFile($groupIdPath . DIRECTORY_SEPARATOR . $n . '.html', $content);
+                    $this->inputDB($content, $groupId, $insertTime, $n);
+                    $this->info("success:{$n}/{$endNumber},groupId:{$groupId},useTime:" . (microtime(true) - LARAVEL_START));
+                }
+                Cache::put(self::KEY_PAGE_N, $n, 3600 * 3);
+                $retry = 0;
+                $n += 25;
+                sleep(2);
+
+            } catch (DouBanException $e) {
+                throw $e;
+            } catch (\Exception $e) {
+                $retry += 1;
+                if ($retry >= 3) {
+                    throw $e;
+                }
             }
-
-            $n += 25;
-        }
-    }
-
-    /**
-     * @param $content
-     * @throws Exception
-     */
-    public function checkContent(string $content)
-    {
-        if (strpos($content, '<!DOCTYPE html>') === false) {
-            throw new Exception("返回非网页" . $content);
-        }
-        if (mb_strpos($content, '你访问豆瓣的方式有点像机器人程序', 0, "UTF-8") !== false) {
-            throw new Exception("数据返回异常");
         }
     }
 
@@ -143,7 +150,8 @@ class S1GroupSpider extends Command
     {
         $crawler = new Crawler($html);
 
-        $result = $crawler->filter('table[class="olt"]')
+        self::$insertDataTmpArr = [];
+        $crawler->filter('table[class="olt"]')
             ->filter('tr')
             ->reduce(function (Crawler $crawler, $i) {
                 if ($i < 1) {
@@ -151,19 +159,25 @@ class S1GroupSpider extends Command
                 }
                 return true;
             })
-            ->each(function (Crawler $node, $i) {
+            ->each(function (Crawler $node, $tdI) {
                 return $node
                     ->filter('td')
-                    ->each(function (Crawler $node, $i) {
+                    ->each(function (Crawler $node, $i) use ($tdI) {
                         $result = '';
                         switch ($i) {
                             case 0:
+                                $topicTitle = $node->text();
+                                self::$insertDataTmpArr[$tdI]['topicTitle'] = $topicTitle;
                                 $topicUrl = $node->filter('a')->attr('href');
                                 $result = (explode('/', $topicUrl))[5];
+                                self::$insertDataTmpArr[$tdI]['topicId'] = $result;
                                 break;
                             case 1:
                                 $peopleUrl = $node->filter('a')->attr('href');
+                                $peopleNickname = $node->text();
+                                self::$insertDataTmpArr[$tdI]['nickname'] = $peopleNickname;
                                 $result = (explode('/', $peopleUrl))[4];
+                                self::$insertDataTmpArr[$tdI]['userId'] = $result;
                                 break;
                             case 2:
                                 $replyNum = $node->text();
@@ -171,6 +185,7 @@ class S1GroupSpider extends Command
                                 break;
                             case 3:
                                 $lastUpdateDate = $node->text();
+                                $this->info("最后更新时间" . $lastUpdateDate);
                                 $result = $lastUpdateDate;
                                 break;
                             default:
@@ -180,26 +195,24 @@ class S1GroupSpider extends Command
                     });
             });
 
-        $waitInsert = array_map(function ($item) use ($groupId, $insertTime) {
-            return [
-                'topic_id' => $item[0],
-                'people_id' => $item[1],
-                'reply_num' => $item[2],
+        foreach (self::$insertDataTmpArr as $item) {
+            DouBanTopic::updateOrCreate([
+                'topic_id' => $item['topicId']
+            ], [
+                'topic_id' => $item['topicId'],
+                'user_id' => $item['userId'],
                 'group_id' => $groupId,
-                'insert_time' => $insertTime,
-            ];
-        }, $result);
-
-        if (!$waitInsert) {
-            $this->warn('no need insert' . PHP_EOL . "https://www.douban.com/group/$groupId/discussion?start=" . $n);
-            throw new Exception("不存在数据,跳过本组循环.注意检查本次url,https://www.douban.com/group/$groupId/discussion?start=" . $n, self::CONTINUE_S);
+                'topic_title' => $item['topicTitle'],
+                'topic_content' => ''
+            ]);
         }
-        $collection = $this->mongoDBDatabase->selectCollection('douban_topics');
-        $result = $collection->insertMany(
-            $waitInsert
-        );
-        $this->info("insert count {$result->getInsertedCount()}");
+
     }
+
+    protected static array $insertDataTmpArr = [];
 
     const CONTINUE_S = 10009;
 }
+
+
+// 197 jp

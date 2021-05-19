@@ -6,6 +6,8 @@ namespace App\Console\Commands\Tool\Douban;
 
 use App\Exceptions\DouBanException;
 use App\RemoteClient\HttpClientDouBan;
+use Exception;
+use Generator;
 use MongoDB\Client as MongoDBClient;
 use MongoDB\Database;
 use \Redis;
@@ -23,12 +25,27 @@ trait DoubanTrait
     private DouBanConfig $doubanConfig;
     private string $doubanPath;
 
+    protected function getRedis(): Redis
+    {
+        return $this->redis;
+    }
+
+    protected function getMongoDBClient(): MongoDBClient
+    {
+        return $this->mongoDBClient;
+    }
+
+    protected function getDoubanPath():string
+    {
+        return $this->doubanPath;
+    }
+
     /**
      * @param string $configFilePath
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
-    public function init($configFilePath = __DIR__ . '/config.json')
+    public function init(string $configFilePath = __DIR__ . '/config.json'): static
     {
         $this->doubanConfig = new DouBanConfig($configFilePath);
 
@@ -55,7 +72,7 @@ trait DoubanTrait
      */
     public function checkDouBanContent(string $content)
     {
-        if (strpos($content, '<!DOCTYPE html>') === false) {
+        if (!str_contains($content, '<!DOCTYPE html>')) {
             throw new DouBanException("返回非网页" . $content);
         }
         if (mb_strpos($content, '你访问豆瓣的方式有点像机器人程序', 0, "UTF-8") !== false) {
@@ -63,5 +80,32 @@ trait DoubanTrait
         }
     }
 
+    /**
+     * @param $start
+     * @param $limit
+     * @param int $step
+     * @return Generator
+     * @throws Exception
+     */
+    protected function xRange($start, $limit, int $step = 1): Generator
+    {
+        if ($start <= $limit) {
+            if ($step <= 0) {
+                throw new Exception('Step must be +ve');
+            }
+
+            for ($i = $start; $i <= $limit; $i += $step) {
+                yield $i;
+            }
+        } else {
+            if ($step >= 0) {
+                throw new Exception('Step must be -ve');
+            }
+
+            for ($i = $start; $i >= $limit; $i += $step) {
+                yield $i;
+            }
+        }
+    }
 
 }

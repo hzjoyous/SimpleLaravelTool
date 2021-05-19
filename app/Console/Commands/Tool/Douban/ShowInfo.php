@@ -7,7 +7,7 @@ use Illuminate\Filesystem\Filesystem;
 
 class S0Tool extends Command
 {
-    use DoubanTrait;
+    use UtilTrait;
 
     const M_CLEAR = 'clear';
     const M_WORK = 'work';
