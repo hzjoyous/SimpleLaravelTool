@@ -46,7 +46,7 @@ trait UtilTrait
      * @return $this
      * @throws Exception
      */
-    public function init(string $configFilePath = __DIR__ . '/config.json'): static
+    public function init(string $configFilePath = __DIR__ . '/config.json')
     {
         $this->doubanConfig = new Config($configFilePath);
         $this->redis        = FRedis::connection()->client();
@@ -75,7 +75,8 @@ trait UtilTrait
     public function checkDouBanContent(string $content)
     {
         //strpos($content, '<!DOCTYPE html>') === false
-        if (!str_contains($content, '<!DOCTYPE html>')) {
+//        if (!str_contains($content, '<!DOCTYPE html>')) {
+        if (strpos($content, '<!DOCTYPE html>') === false) {
             throw new DouBanException("返回非网页" . $content);
         }
         if (mb_strpos($content, '你访问豆瓣的方式有点像机器人程序', 0, "UTF-8") !== false) {

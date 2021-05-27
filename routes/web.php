@@ -15,11 +15,15 @@ use App\Http\Controllers\Controller;
 |
 */
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+ Route::get('/', function () {
+     return view('welcome');
+ });
 
-Route::get('/', Controller::class.'@index');
+ Route::get('/spa',function (){
+    return view('spa');
+ });
+
+Route::get('/work', Controller::class.'@index');
 
 Route::any('/phpinfo', fn() => phpinfo());
 

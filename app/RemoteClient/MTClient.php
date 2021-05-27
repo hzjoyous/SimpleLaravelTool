@@ -10,6 +10,11 @@ use GuzzleHttp\Cookie\SetCookie;
 use GuzzleHttp\RequestOptions;
 
 
+/**
+ * Class MTClient
+ * localhost gthh
+ * @package App\RemoteClient
+ */
 class MTClient
 {
 

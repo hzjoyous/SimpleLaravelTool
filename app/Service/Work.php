@@ -4,6 +4,8 @@
 namespace App\Service;
 
 
+use App\RemoteClient\AJK_DKT_fogreLoginClient;
+use App\RemoteClient\AJKClient;
 use App\RemoteClient\KClient;
 use App\RemoteClient\KMClient;
 use App\RemoteClient\XQClient;
@@ -18,9 +20,23 @@ class Work
     {
         dump('启动时间' . (microtime(true) - LARAVEL_START));
 //        $this->xq();
-        $this->ky();
+//        $this->ky();
+        $this->ajkDktForgeLogin();
     }
 
+
+    public function ajk()
+    {
+        $ajkClient = new AJKClient();
+        $ajkClient->a1();
+    }
+
+    public function ajkDktForgeLogin()
+    {
+        $client = new AJK_DKT_fogreLoginClient();
+        $r = $client->getUserList();
+        dump($r);
+    }
     public function xq()
     {
         $xqClient = new XQClient();
