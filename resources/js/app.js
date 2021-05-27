@@ -6,11 +6,16 @@ Vue.use(VueRouter).use(ElementUI)
 require('./bootstrap');
 
 import home from "./view/home"
+import login from "./view/login"
+import userList from "./view/userList"
 
 
 const routes = [
     { path: '/', component: {template :"<div>home</div>"} },
-    { path: '/example', component: home }
+    { path: '/home', component: home },
+    { path: '/login', component: login },
+    { path: '/userList', component: userList }
+
 ];
 
 const router = new VueRouter({
