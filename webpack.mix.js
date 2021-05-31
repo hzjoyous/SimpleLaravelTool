@@ -15,3 +15,10 @@ mix.js('resources/js/app.js', 'public/js')
     .postCss('resources/css/app.css', 'public/css', [
         //
     ]);
+mix.webpackConfig({
+    resolve:{
+        alias: {
+            'vue-router$': 'vue-router/dist/vue-router.common.js'
+        }
+    }
+});

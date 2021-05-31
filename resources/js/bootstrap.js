@@ -1,3 +1,5 @@
+import Vue from "vue";
+
 window._ = require('lodash');
 
 /**
