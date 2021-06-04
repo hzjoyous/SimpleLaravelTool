@@ -49,6 +49,7 @@ class ZQQBotTool2 extends Command
 
     /**
      *
+     * @throws \Exception
      */
     public function handle()
     {

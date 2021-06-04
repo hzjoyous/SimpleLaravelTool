@@ -48,7 +48,7 @@ class MakeDayTodo extends Command
             "星期六"
         ];
         $this->newLine();
-        for ($i = $day; $i >= -100; $i--) {
+        for ($i = $day; $i >= 0; $i--) {
             $timeStamp = time() + 86400 * $i;
 
             $w = date("w", $timeStamp);
