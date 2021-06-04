@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use PhpParser\Node\Scalar\MagicConst\Dir;
 
-class WindowsPic extends Command
+class windowsPic extends Command
 {
     /**
      * The name and signature of the console command.

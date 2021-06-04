@@ -27,11 +27,11 @@ class UserWelcome extends Mailable
      *
      * @return $this
      */
-    public function build()
+    public function build(): UserWelcome
     {
         return $this->markdown('emails.user.welcome', [
-            "name" => $this->user[0] ?? '马邦德',
-            "sex" => ($this->user[1] ?? "女") == "女" ? "欧巴桑" : "欧尼酱"
+            "name" => $this->user[0] ?? 'user.name',
+            "sex" => ($this->user[1] ?? "女") == "女" ? 0 : 1
         ]);
     }
 }

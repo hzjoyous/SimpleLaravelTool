@@ -80,7 +80,6 @@ class AJK_DKT_fogreLoginClient
     }
 
     public function getUserList()
-
     {
         return $this->kmQueryGet('api/forge/getUserList', [
         ]);

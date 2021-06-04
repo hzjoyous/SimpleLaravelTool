@@ -3,12 +3,12 @@
 namespace App\Console\Commands\Demo;
 
 use App\Utils\SimpleSystem;
-use Clue\React\Buzz\Browser;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\Factory;
 use React\Filesystem\Filesystem;
+use React\Http\Browser;
 
 class React extends Command
 {

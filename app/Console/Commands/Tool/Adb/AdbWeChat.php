@@ -4,7 +4,7 @@ namespace App\Console\Commands\Tool\Adb;
 
 use Illuminate\Console\Command;
 
-class AdbWechat extends Command
+class AdbWeChat extends Command
 {
     /**
      * The name and signature of the console command.
