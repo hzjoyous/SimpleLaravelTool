@@ -11,7 +11,7 @@ class T extends Command
      *
      * @var string
      */
-    protected $signature = 'z:t';
+    protected $signature = 'z:tttt';
 
     /**
      * The console command description.
