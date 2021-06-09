@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 
 class WebDemoController extends Controller
 {
-    public function index()
+    public function index($request)
     {
         return "This is WebDemo";
     }

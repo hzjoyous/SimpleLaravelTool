@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class ToolController extends Controller
 {
-    public function index()
+    public function index($request)
     {
         return $this->simpleResponse('欢迎使用Tool Api');
     }

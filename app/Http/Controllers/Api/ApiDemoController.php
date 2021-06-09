@@ -118,6 +118,7 @@ class ApiDemoController extends Controller
             $fileDir  = storage_path('tmp' . DIRECTORY_SEPARATOR);
             $filePath = $fileDir . $fileName;
             $file->move($fileDir, $fileName);
+            //$file->getContent();
 
             if (($handle = fopen($filePath, "r")) !== FALSE) {
                 fgetcsv($handle, 1000, ",");
