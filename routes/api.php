@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use \App\Http\Controllers\Api\ApiDemoController;
+use App\Http\Controllers\Api\ApiDemoController;
 use App\Http\Controllers\Api\ToolController;
 
 /*
@@ -20,7 +20,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
 Route::any('/demo', [ApiDemoController::class, 'index']);
 Route::any('/show-request', [ApiDemoController::class, 'showRequest']);
 Route::get('/cookie-look', [ApiDemoController::class, 'cookieLook']);
@@ -32,5 +31,9 @@ Route::post('/originalUploadFile', [ApiDemoController::class, 'originalUploadFil
 Route::prefix('/tool')->group(function () {
     Route::get('', [ToolController::class, 'index']);
     Route::get('opCacheClean', [ToolController::class, 'opCacheClean']);
+});
+
+Route::any('/getAll',function (Request $r){
+    var_export($r);
 });
 
