@@ -106,7 +106,7 @@ class ApiDemoController extends Controller
     public function uploadFile(Request $request)
     {
         $files = $request->files;
-
+        dump("文件数量",count($files));
         foreach ($files as $file) {
             /* @var $file UploadedFile */
             //$tmpFilePath = $file->getPath(). DIRECTORY_SEPARATOR.$file->getFilename();
@@ -118,7 +118,10 @@ class ApiDemoController extends Controller
             $fileDir  = storage_path('tmp' . DIRECTORY_SEPARATOR);
             $filePath = $fileDir . $fileName;
             $file->move($fileDir, $fileName);
-            //$file->getContent();
+            dump($file->getContent());
+            sleep(1000);
+            $file->getContent();
+
 
             if (($handle = fopen($filePath, "r")) !== FALSE) {
                 fgetcsv($handle, 1000, ",");

@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use React\Promise\Deferred;
 
 class T extends Command
 {
@@ -37,6 +38,39 @@ class T extends Command
      */
     public function handle()
     {
+        $loop = \React\EventLoop\Factory::create();
+
+        $server = new \React\Http\Server($loop, function (\Psr\Http\Message\ServerRequestInterface $request) {
+            return new \React\Http\Message\Response(
+                200,
+                array(
+                    'Content-Type' => 'text/plain'
+                ),
+                "Hello World!\n"
+            );
+        });
+
+        $socket = new \React\Socket\Server('0.0.0.0:8080', $loop);
+        $server->listen($socket);
+
+        $loop->run();
+
+        $deferred = new Deferred();
+
+        $deferred->promise()
+            ->then(function ($x) {
+                echo '222'.PHP_EOL;
+                return $x + 1;
+            });
+//        $p = $deferred->promise();
+        $this->info(1);
+        $deferred->resolve(1);
+        $this->info(2);
+        die();
+        $t1 = (microtime(true));
+        sleep(1);
+        $t2 = (microtime(true));
+        dd($t1,$t2,time());
         $list          = [5, 14, 31];
         $nowMonth      = (int)date('m');
         $nowYear       = (int)date('Y');
