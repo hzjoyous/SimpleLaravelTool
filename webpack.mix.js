@@ -11,11 +11,18 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/js/app.js', 'public/js')
+mix
+    // 无效
+    // .setPublicPath(path.normalize('public/assert'))
+    // .setResourceRoot('/assert')
+    .js('resources/js/app.js', 'public/js')
     .postCss('resources/css/app.css', 'public/css', [
         //
-    ]);
+    ]).version();
 mix.webpackConfig({
+    devServer: {
+        host: '0.0.0.0',
+    },
     resolve:{
         alias: {
             'vue-router$': 'vue-router/dist/vue-router.common.js'

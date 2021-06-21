@@ -23,6 +23,10 @@ use App\Http\Controllers\Controller;
     return view('spa');
  });
 
+Route::get('/webtest',function (){
+    return view('test');
+});
+
 Route::get('/work', Controller::class.'@index');
 
 Route::any('/phpinfo', fn() => phpinfo());
