@@ -12,13 +12,14 @@ const mix = require('laravel-mix');
  */
 
 mix
-    // 无效
-    // .setPublicPath(path.normalize('public/assert'))
-    // .setResourceRoot('/assert')
-    .js('resources/js/app.js', 'public/js')
-    .postCss('resources/css/app.css', 'public/css', [
+    .setPublicPath(path.normalize('public/assert'))
+    .setResourceRoot('/assert')
+    .js('resources/js/app.js', 'js')
+    .postCss('resources/css/app.css', 'css', [
         //
     ]).version();
+
+mix.sourceMaps();
 mix.webpackConfig({
     devServer: {
         host: '0.0.0.0',
