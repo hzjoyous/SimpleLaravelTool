@@ -8,10 +8,12 @@ require('./bootstrap');
 import home from "./view/home"
 import login from "./view/login"
 import userList from "./view/userList"
+import test from "./view/test";
 
 
 const routes = [
-    { path: '/', component: {template :"<div>home</div>"} },
+    // { path: '/', component: {template :"<div>home</div>"} },
+    { path: '/', component: test },
     { path: '/home', component: home },
     { path: '/login', component: login },
     { path: '/userList', component: userList }
