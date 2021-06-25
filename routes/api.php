@@ -37,3 +37,7 @@ Route::any('/getAll',function (Request $r){
     var_export($r);
 });
 
+Route::any('test',function (Request $r){
+    $r->session()->put('1',1);
+   return  1;
+});
