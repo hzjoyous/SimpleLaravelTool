@@ -36,8 +36,9 @@ return [
 
     'channels' => [
         'stack' => [
-            'driver' => 'stack',
-            'channels' => ['single'],
+            'driver'            => 'stack',
+            'tap'               => [App\Logging\CustomizeFormatter::class],
+            'channels'          => ['single'],
             'ignore_exceptions' => false,
         ],
 

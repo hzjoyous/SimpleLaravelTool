@@ -19,6 +19,9 @@ use App\Http\Controllers\Controller;
      return view('welcome');
  });
 
+ Route::any('/login',function(){
+     return '未开发';
+ })->name('login');
  Route::get('/spa',function (){
     return view('spa');
  });
