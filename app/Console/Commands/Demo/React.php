@@ -17,7 +17,7 @@ class React extends Command
      *
      * @var string
      */
-    protected $signature = 'zdemo:react';
+    protected $signature = 'xdemo:react';
 
     /**
      * The console command description.

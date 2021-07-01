@@ -12,7 +12,7 @@ class P8 extends Command
      *
      * @var string
      */
-    protected $signature = 'zdemo:p8';
+    protected $signature = 'xdemo:p8';
 
     /**
      * The console command description.

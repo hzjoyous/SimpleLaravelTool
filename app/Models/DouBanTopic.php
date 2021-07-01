@@ -19,7 +19,7 @@ class DouBanTopic extends Model
 
     protected $guarded = [];
 
-    public static function getByLaterThanCreateTime($createTime): \Illuminate\Database\Eloquent\Collection|array
+    public static function getByLaterThanCreateTime($createTime)
     {
         return self::query()->where('created_at','>',$createTime)->get();
     }

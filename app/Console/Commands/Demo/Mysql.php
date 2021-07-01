@@ -11,7 +11,7 @@ class Mysql extends Command
      *
      * @var string
      */
-    protected $signature = 'zdemo:mysql';
+    protected $signature = 'xdemo:mysql';
 
     /**
      * The console command description.

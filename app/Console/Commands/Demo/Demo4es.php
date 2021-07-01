@@ -12,7 +12,7 @@ class Demo4es extends Command
      *
      * @var string
      */
-    protected $signature = 'zdemo:es';
+    protected $signature = 'xdemo:es';
 
     /**
      * The console command description.

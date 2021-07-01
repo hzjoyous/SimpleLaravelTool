@@ -12,7 +12,7 @@ class Gen extends Command
      *
      * @var string
      */
-    protected $signature = 'zdemo:g';
+    protected $signature = 'xdemo:g';
 
     /**
      * The console command description.

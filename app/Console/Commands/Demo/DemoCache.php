@@ -12,7 +12,7 @@ class DemoCache extends Command
      *
      * @var string
      */
-    protected $signature = 'zdemo:cache';
+    protected $signature = 'xdemo:cache';
 
     /**
      * The console command description.

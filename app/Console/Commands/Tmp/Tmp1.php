@@ -1,25 +1,25 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Tmp;
 
 use Illuminate\Console\Command;
 use React\Promise\Deferred;
 
-class T extends Command
+class Tmp1 extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'z:t';
+    protected $signature = 'zz:t1';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = '临时命令1';
 
     /**
      * Create a new command instance.
@@ -66,11 +66,9 @@ class T extends Command
         $this->info(1);
         $deferred->resolve(1);
         $this->info(2);
-        die();
         $t1 = (microtime(true));
         sleep(1);
-        $t2 = (microtime(true));
-        dd($t1,$t2,time());
+        $t2 = (microtime(true));;
         $list          = [5, 14, 31];
         $nowMonth      = (int)date('m');
         $nowYear       = (int)date('Y');

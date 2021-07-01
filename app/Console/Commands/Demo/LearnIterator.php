@@ -12,7 +12,7 @@ class LearnIterator extends Command
      *
      * @var string
      */
-    protected $signature = 'zdemo:iterator';
+    protected $signature = 'xdemo:iterator';
 
     /**
      * The console command description.

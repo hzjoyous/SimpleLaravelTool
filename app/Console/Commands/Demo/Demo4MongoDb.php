@@ -12,7 +12,7 @@ class Demo4MongoDb extends Command
      *
      * @var string
      */
-    protected $signature = 'zdemo:mongodb';
+    protected $signature = 'xdemo:mongodb';
 
     /**
      * The console command description.

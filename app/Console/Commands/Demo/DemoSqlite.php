@@ -13,7 +13,7 @@ class DemoSqlite extends Command
      *
      * @var string
      */
-    protected $signature = 'zdemo:sqlite';
+    protected $signature = 'xdemo:sqlite';
 
     /**
      * The console command description.

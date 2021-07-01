@@ -1,24 +1,24 @@
 <?php
 
-namespace App\Console\Commands\Demo;
+namespace App\Console\Commands\Tmp;
 
 use Illuminate\Console\Command;
 
-class Pipe extends Command
+class Tmp3 extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'xdemo:pipe';
+    protected $signature = 'zz:t3';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'example: cat composer.json | php artisan demo:pipe';
+    protected $description = '临时命令3';
 
     /**
      * Create a new command instance.
@@ -33,18 +33,10 @@ class Pipe extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return int
      */
-    public function handle()
+    public function handle(): int
     {
-        $fp = fopen('php://stdin', 'r');
-        if ($fp) {
-            while ($line = fgets($fp, 4096)) {
-                echo $line;
-            }
-            fclose($fp);
-        }
-        return ;
-
+        return 0;
     }
 }

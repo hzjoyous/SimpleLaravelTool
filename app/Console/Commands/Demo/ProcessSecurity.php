@@ -12,7 +12,7 @@ class ProcessSecurity extends Command
      *
      * @var string
      */
-    protected $signature = 'zdemo:pros';
+    protected $signature = 'xdemo:pros';
 
     /**
      * The console command description.

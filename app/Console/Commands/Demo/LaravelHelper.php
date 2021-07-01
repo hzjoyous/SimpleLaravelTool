@@ -12,7 +12,7 @@ class LaravelHelper extends Command
      *
      * @var string
      */
-    protected $signature = 'zdemo:laravel';
+    protected $signature = 'xdemo:laravel';
 
     /**
      * The console command description.

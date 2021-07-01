@@ -11,7 +11,7 @@ class InfiniteClass extends Command
      *
      * @var string
      */
-    protected $signature = 'zdemo:inf';
+    protected $signature = 'xdemo:inf';
 
     /**
      * The console command description.

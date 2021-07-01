@@ -11,7 +11,7 @@ class PhpFpm extends Command
      *
      * @var string
      */
-    protected $signature = 'zdemo:phpfpm';
+    protected $signature = 'xdemo:phpfpm';
 
     /**
      * The console command description.

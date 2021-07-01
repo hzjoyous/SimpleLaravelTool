@@ -16,7 +16,7 @@ class Demo4phpRedis extends Command
      *
      * @var string
      */
-    protected $signature = 'zdemo:phpredis';
+    protected $signature = 'xdemo:phpredis';
 
     /**
      * The console command description.

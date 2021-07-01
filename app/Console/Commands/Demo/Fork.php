@@ -12,7 +12,7 @@ class Fork extends Command
      *
      * @var string
      */
-    protected $signature = 'zdemo:fork';
+    protected $signature = 'xdemo:fork';
 
     /**
      * The console command description.

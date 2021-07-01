@@ -14,7 +14,7 @@ class ReactSocketServer extends Command
      *
      * @var string
      */
-    protected $signature = 'zdemo:rsocketserver';
+    protected $signature = 'xdemo:rsocketserver';
 
     /**
      * The console command description.

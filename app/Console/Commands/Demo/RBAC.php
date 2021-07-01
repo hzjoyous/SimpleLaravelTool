@@ -11,7 +11,7 @@ class RBAC extends Command
      *
      * @var string
      */
-    protected $signature = 'zdemo:rbac';
+    protected $signature = 'xdemo:rbac';
 
     /**
      * The console command description.
