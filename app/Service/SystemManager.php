@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Utils;
 
-class SimpleSystem
+namespace App\Service;
+
+
+class SystemManager
 {
 
     const OS_UNKNOWN = 1;
@@ -13,7 +15,7 @@ class SimpleSystem
     /**
      * @return int
      */
-    static public function getOS(): int
+    public static function getOS(): int
     {
         switch (true) {
             case stristr(PHP_OS, 'DAR'):
@@ -27,12 +29,17 @@ class SimpleSystem
         }
     }
 
-    static public function isWin(): bool
+    public static function isWin(): bool
     {
         return self::getOS() === self::OS_WIN;
     }
 
-    static public function is_nix(): bool
+    public static function isLinux():bool
+    {
+        return self::getOS() === self::OS_LINUX;
+    }
+
+    public static function is_nix(): bool
     {
         return in_array(self::getOS(), [self::OS_LINUX, self::OS_OSX], true);
     }

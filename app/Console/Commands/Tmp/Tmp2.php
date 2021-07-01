@@ -6,7 +6,7 @@ use App\Models\Dog;
 use App\Models\DouBanComment;
 use App\Models\DouBanTopic;
 use App\RemoteClient\HttpClientDouBan;
-use App\Utils\SimpleSystem;
+use App\Service\SystemManager;
 use Faker\Factory;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
@@ -168,7 +168,7 @@ class Tmp2 extends Command
                 $topicUrl,
                 null
             ];
-            if (false && SimpleSystem::isWin()) {
+            if (false && SystemManager::isWin()) {
                 exec("start $topicUrl");
             }
         }
@@ -179,7 +179,7 @@ class Tmp2 extends Command
                 $topicUrl,
                 $comment->insert_at,
             ];
-            if (false && SimpleSystem::isWin()) {
+            if (false && SystemManager::isWin()) {
                 exec("start $topicUrl");
             }
         }

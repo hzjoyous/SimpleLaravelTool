@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\Demo;
 
-use App\Utils\SimpleSystem;
+use App\Service\SystemManager;
 use Illuminate\Console\Command;
 
 class Fork extends Command
@@ -39,11 +39,11 @@ class Fork extends Command
     public function handle()
     {
         //
-        if (SimpleSystem::getOS() !== SimpleSystem::OS_LINUX) {
+        if (SystemManager::isLinux()) {
             $this->error("not linux");
             return;
         }
-        return ;
+
         $pid = pcntl_fork();
         //父进程和子进程都会执行下面代码
         if ($pid == -1) {

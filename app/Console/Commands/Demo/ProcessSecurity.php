@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\Demo;
 
-use App\Utils\SimpleSystem;
+use App\Service\SystemManager;
 use Illuminate\Console\Command;
 
 class ProcessSecurity extends Command
@@ -39,7 +39,7 @@ class ProcessSecurity extends Command
     public function handle()
     {
 
-        if(SimpleSystem::isWin()){
+        if(SystemManager::isWin()){
             $this->error("不支持win");
             return 0;
         }

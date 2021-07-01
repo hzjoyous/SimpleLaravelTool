@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Utils;
+
+namespace App\Service;
 
 
 class QQUtil
+
 {
     public static function usernameEncode(array $friendList): array
     {
@@ -65,6 +67,7 @@ class QQUtil
         }, []);
     }
 }
+
 
 
 

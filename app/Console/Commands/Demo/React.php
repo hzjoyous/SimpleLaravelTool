@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\Demo;
 
-use App\Utils\SimpleSystem;
+use App\Service\SystemManager;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use Psr\Http\Message\ResponseInterface;
@@ -43,7 +43,7 @@ class React extends Command
      */
     public function handle()
     {
-        if(SimpleSystem::getOS()===SimpleSystem::OS_WIN){
+        if(!SystemManager::isWin()){
             dd('文件io用的底层在不支持windows,这个demo切换到linux再试吧');
         }
 

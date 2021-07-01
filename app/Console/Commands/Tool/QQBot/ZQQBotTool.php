@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\Tool\QQBot;
 
-use App\Utils\QQUtil;
+use App\Service\QQUtil;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 

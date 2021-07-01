@@ -2,10 +2,8 @@
 
 namespace App\Console\Commands\Tool\QQBot;
 
-use App\Utils\QQUtil;
-use GuzzleHttp\Client;
+use App\Service\QQUtil;
 use Illuminate\Console\Command;
-use Illuminate\Filesystem\Filesystem;
 
 class ZQQBotTool2 extends Command
 {
