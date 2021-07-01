@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ApiDemoController;
 use App\Http\Controllers\Api\ToolController;
+use Symfony\Component\HttpFoundation\Response;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,11 +34,18 @@ Route::prefix('/tool')->group(function () {
     Route::get('opCacheClean', [ToolController::class, 'opCacheClean']);
 });
 
-Route::any('/getAll',function (Request $r){
+Route::any('/getAll', function (Request $r) {
     var_export($r);
 });
 
-Route::any('test',function (Request $r){
-    $r->session()->put('1',1);
-   return  1;
+Route::any('test', function (Request $r) {
+    $r->session()->put('1', 1);
+    return 1;
+});
+
+Route::get('about', function (Request $r) {
+    return response()->json(
+        ['about' => 'this is a laravel api'],
+        Response::HTTP_OK
+    );
 });

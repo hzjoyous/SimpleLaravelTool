@@ -1,7 +1,5 @@
 <template>
-
-    <el-container direction="vertical">
-
+    <el-container>
         <el-header style="padding: 0">
             <el-menu
                 :default-active="this.$route.path"
@@ -17,24 +15,21 @@
             </el-menu>
 
         </el-header>
-        <el-main height="100%">
-            <el-button @click="login">登陆系统</el-button>
-
-            <el-row>
-                <el-button>默认按钮</el-button>
-                <el-button type="primary">主要按钮</el-button>
-            </el-row>
-        </el-main>
-
+        <span v-text="about"></span>
     </el-container>
 </template>
 <script>
 export default {
-    name: "home",
-    methods:{
-        login:function (){
-
-        }
+    data() {
+        return {
+            about: "default about message"
+        };
+    }, mounted() {
+        this.$remoteService.about().then((r) => {
+            this.about = r.about
+        }).catch(e => {
+            console.log(e)
+        })
     }
 }
 </script>
