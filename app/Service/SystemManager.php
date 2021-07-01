@@ -34,7 +34,7 @@ class SystemManager
         return self::getOS() === self::OS_WIN;
     }
 
-    public static function isLinux():bool
+    public static function isLinux(): bool
     {
         return self::getOS() === self::OS_LINUX;
     }
@@ -42,5 +42,10 @@ class SystemManager
     public static function is_nix(): bool
     {
         return in_array(self::getOS(), [self::OS_LINUX, self::OS_OSX], true);
+    }
+
+    public static function pRunTime(): float
+    {
+        return (microtime(true) - LARAVEL_START);
     }
 }

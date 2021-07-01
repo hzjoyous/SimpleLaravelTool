@@ -34,14 +34,14 @@ class Fork extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         //
         if (SystemManager::isLinux()) {
             $this->error("not linux");
-            return;
+            return 1;
         }
 
         $pid = pcntl_fork();
@@ -56,6 +56,6 @@ class Fork extends Command
             //子进程得到的$pid为0, 所以这里是子进程执行的逻辑。
         }
 
-        return;
+        return 0;
     }
 }

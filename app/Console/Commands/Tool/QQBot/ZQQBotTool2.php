@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Tool\QQBot;
 
 use App\Service\QQUtil;
+use Exception;
 use Illuminate\Console\Command;
 
 class ZQQBotTool2 extends Command
@@ -47,16 +48,17 @@ class ZQQBotTool2 extends Command
 
     /**
      *
-     * @throws \Exception
+     * @throws Exception
      */
-    public function handle()
+    public function handle(): int
     {
         $tmpPath = storage_path('tmp');
         $inputFileName = $tmpPath . '/qqFriendList.json';
         $str = file_get_contents($inputFileName);
         $friendList = json_decode($str, true);
         $friendList = QQUtil::usernameEncode($friendList);
-        return;
+        dump($friendList);
+        return 0;
     }
 
 
