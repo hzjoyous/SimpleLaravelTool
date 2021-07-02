@@ -11,13 +11,13 @@ class HttpClientCQ
     /**
      * @var Client $client
      */
-    protected $client;
+    protected Client $client;
 
-    protected $baseQuery = [
+    protected array $baseQuery = [
         'access_token' => 'hzjmytoken',
     ];
 
-    protected function buildQuery($query)
+    protected function buildQuery($query): array
     {
         return array_merge($query, $this->baseQuery);
     }
