@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Tmp;
 
+use App\Models\User;
 use Illuminate\Console\Command;
 
 class Tmp3 extends Command
@@ -37,6 +38,11 @@ class Tmp3 extends Command
      */
     public function handle(): int
     {
+
+        $o1 = User::query()->where([] );
+        $o2= User::where([]);
+        $this->info('上面一行是调用了 __call() ,判断没有后先调用 $this->newQuery() 之后调用 where，所以直接用的哥方法就好');
+        dump(get_class($o1),get_class($o2));
         return 0;
     }
 }
